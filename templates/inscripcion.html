@@ -82,7 +82,7 @@
 
         .form-box {
             width: 100%;
-            max-width: 560px;
+            max-width: 620px;
             background: rgba(0,0,0,0.78);
             border: 1px solid rgba(0,255,136,0.35);
             border-radius: 18px;
@@ -169,42 +169,23 @@
     <div class="contenedor">
         <div class="form-box">
             <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
-            <h1> Inscripciones abiertas</h1>
+            <h1>📢 Inscripciones abiertas</h1>
             <p>Completa tus datos para reservar tu cupo en nuestros programas de capacitación.</p>
 
             <form method="POST">
                 <input type="text" name="nombre" placeholder="Nombre completo" required>
                 <input type="email" name="correo" placeholder="Correo electrónico" required>
 
-                <select name="curso" required>
-                    <option value="">Selecciona un curso</option>
-                    <option>Medicina Táctica</option>
-                    <option>Manejo de Hemorragias</option>
-                    <option>Manejo de Fracturas</option>
-                    <option>Sutura</option>
-                    <option>Canalización de Paciente</option>
-                    <option>Curso de Manejo de Mina</option>
-                    <option>Concepto y Manejo del Paciente en Aeromedicina</option>
-                    <option>Manejo de Arma de Fuego</option>
-                    <option>Primer respondiente en disturbios públicos</option>
-                    <option>Primeros Auxilios Básicos</option>
-                    <option>Primeros Auxilios Psicológicos</option>
-                    <option>Prevención del Suicidio y Autolesión</option>
-                    <option>Intervención en Crisis y Desastres</option>
-                    <option>Atención Psicosocial a Víctimas de Violencia</option>
-                    <option>Prevención del Abuso Sexual Infantil</option>
-                    <option>Cuidado y Prevención del Maltrato Infantil</option>
-                    <option>Salud Mental para Cuidadores</option>
-                    <option>Básico de Inteligencia</option>
-                    <option>Inteligencia Avanzada</option>
-                    <option>Contrainteligencia</option>
-                    <option>Protección VP</option>
-                    <option>Método de la Investigación Criminalista</option>
-                    <option>Análisis Superior</option>
-                    <option>Derechos Humanos</option>
-                    <option>Detective Privado</option>
-                    <option>Reclutamiento de Fuentes</option>
-                    <option>Perfil Sospechoso</option>
+                <select id="area" required onchange="actualizarCursos()">
+                    <option value="">Selecciona un área</option>
+                    <option value="medicina">⚕️ Área de Medicina Táctica</option>
+                    <option value="auxilios">🚑 Primeros Auxilios</option>
+                    <option value="mental">🧠 Salud Mental y Atención Psicosocial</option>
+                    <option value="complementarios">🛡️ Cursos Complementarios</option>
+                </select>
+
+                <select id="curso" name="curso" required>
+                    <option value="">Selecciona primero un área</option>
                 </select>
 
                 <button type="submit">Enviar inscripción</button>
@@ -217,6 +198,70 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const cursosPorArea = {
+            medicina: [
+                "Medicina Táctica",
+                "Manejo de Hemorragias",
+                "Manejo de Fracturas",
+                "Sutura",
+                "Canalización de Paciente",
+                "Curso de Manejo de Mina",
+                "Concepto y Manejo del Paciente en Aeromedicina",
+                "Manejo de Arma de Fuego",
+                "Primer respondiente en disturbios públicos"
+            ],
+            auxilios: [
+                "Primeros Auxilios Básicos",
+                "Primeros Auxilios Psicológicos"
+            ],
+            mental: [
+                "Prevención del Suicidio y Autolesión",
+                "Intervención en Crisis y Desastres",
+                "Atención Psicosocial a Víctimas de Violencia",
+                "Prevención del Abuso Sexual Infantil",
+                "Cuidado y Prevención del Maltrato Infantil",
+                "Salud Mental para Cuidadores"
+            ],
+            complementarios: [
+                "Básico de Inteligencia",
+                "Inteligencia Avanzada",
+                "Contrainteligencia",
+                "Protección VP",
+                "Método de la Investigación Criminalista",
+                "Análisis Superior",
+                "Derechos Humanos",
+                "Detective Privado",
+                "Reclutamiento de Fuentes",
+                "Perfil Sospechoso"
+            ]
+        };
+
+        function actualizarCursos() {
+            const area = document.getElementById("area").value;
+            const selectCurso = document.getElementById("curso");
+
+            selectCurso.innerHTML = "";
+
+            if (!area) {
+                selectCurso.innerHTML = '<option value="">Selecciona primero un área</option>';
+                return;
+            }
+
+            const opcionInicial = document.createElement("option");
+            opcionInicial.value = "";
+            opcionInicial.textContent = "Selecciona un curso";
+            selectCurso.appendChild(opcionInicial);
+
+            cursosPorArea[area].forEach(curso => {
+                const option = document.createElement("option");
+                option.value = curso;
+                option.textContent = curso;
+                selectCurso.appendChild(option);
+            });
+        }
+    </script>
 
 </body>
 </html>
