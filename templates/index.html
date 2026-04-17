@@ -1,34 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cursos Tácticos</title>
+    <title>F.E.M.P. | Cursos Tácticos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             color: #00ff88;
             text-align: center;
-
-            /* 🔥 FONDO CON TU IMAGEN */
             background:
-                linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)),
+                linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.9)),
                 url("{{ url_for('static', filename='portada.jpg') }}");
             background-size: cover;
             background-position: center;
+            background-attachment: fixed;
+        }
+
+        .topbar {
+            background: rgba(0, 0, 0, 0.88);
+            border-bottom: 1px solid #00ff88;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .topbar .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar .brand img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #00ff88;
+            background: white;
+        }
+
+        .topbar .brand span {
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            margin: 0 12px;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .menu a:hover {
+            color: #00ff88;
+        }
+
+        .contacto {
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        .contacto a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
         }
 
         .contenedor {
-            padding-top: 100px;
-        }
-
-        h1 {
-            font-size: 60px;
-            letter-spacing: 3px;
-        }
-
-        p {
-            font-size: 20px;
-            color: #cccccc;
+            padding: 80px 20px 40px;
         }
 
         .logo {
@@ -38,6 +85,24 @@
             border: 3px solid #00ff88;
             margin-bottom: 20px;
             background: white;
+            object-fit: cover;
+            box-shadow: 0 0 20px rgba(0,255,136,0.35);
+        }
+
+        h1 {
+            font-size: 60px;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 20px;
+            color: #e0e0e0;
+        }
+
+        .hero-text {
+            max-width: 850px;
+            margin: auto;
         }
 
         button {
@@ -57,9 +122,31 @@
             transform: scale(1.05);
         }
 
+        .botones-secundarios {
+            margin-top: 15px;
+        }
+
+        .botones-secundarios a {
+            display: inline-block;
+            margin: 8px;
+            padding: 13px 28px;
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.4);
+        }
+
+        .botones-secundarios a:hover {
+            background: #00ff88;
+            color: black;
+        }
+
         .cursos {
             margin-top: 80px;
-            padding-bottom: 80px;
+            padding: 50px 20px 80px;
+            background-color: rgba(0, 0, 0, 0.78);
         }
 
         .contenedor-cursos {
@@ -73,9 +160,10 @@
         .curso {
             border: 1px solid #00ff88;
             padding: 20px;
-            width: 260px;
-            border-radius: 8px;
-            background-color: rgba(0,0,0,0.8);
+            width: 280px;
+            border-radius: 10px;
+            background-color: rgba(0,0,0,0.82);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
         }
 
         .curso h3 {
@@ -90,29 +178,103 @@
         .curso a button {
             width: 100%;
         }
+
+        .aliados {
+            padding: 70px 20px;
+            background: rgba(0,0,0,0.72);
+        }
+
+        .aliados img {
+            width: 100%;
+            max-width: 950px;
+            border-radius: 12px;
+            border: 2px solid #00ff88;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .footer {
+            background: #050505;
+            color: #bbbbbb;
+            padding: 25px 20px;
+            border-top: 1px solid #00ff88;
+        }
+
+        .footer a {
+            color: #00ff88;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .topbar {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            h1 {
+                font-size: 40px;
+            }
+
+            p {
+                font-size: 18px;
+            }
+
+            .menu {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .menu a {
+                margin: 6px 10px;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <div class="topbar">
+        <div class="brand">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo FEMP">
+            <span>F.E.M.P.</span>
+        </div>
+
+        <div class="menu">
+            <a href="/">Inicio</a>
+            <a href="/cursos">Cursos</a>
+            <a href="/inscripcion">Inscripción</a>
+        </div>
+
+        <div class="contacto">
+            WhatsApp: <a href="https://wa.me/18090000000" target="_blank">+1 809 000 0000</a>
+        </div>
+    </div>
+
     <div class="contenedor">
+        <img src="{{ url_for('static', filename='logo.jpg') }}" class="logo" alt="Logo">
 
-        <!-- 🔥 LOGO -->
-        <img src="{{ url_for('static', filename='logo.jpg') }}" class="logo">
-
-        <h1>CURSOS TÁCTICOS</h1>
-        <p>Entrenamiento real. Disciplina. Dominio total.</p>
+        <div class="hero-text">
+            <h1>CURSOS TÁCTICOS</h1>
+            <p>
+                Formación especializada en medicina táctica, respuesta operativa,
+                supervivencia, rescate y atención prehospitalaria para personal militar,
+                policial y civil.
+            </p>
+        </div>
 
         <a href="/cursos">
             <button>VER CURSOS</button>
         </a>
 
+        <div class="botones-secundarios">
+            <a href="/inscripcion">Inscribirme ahora</a>
+            <a href="https://wa.me/18090000000" target="_blank">Hablar por WhatsApp</a>
+        </div>
     </div>
 
     <div class="cursos">
         <h2 style="color: #00ff88;">CURSOS DESTACADOS</h2>
 
         <div class="contenedor-cursos">
-
             <div class="curso">
                 <h3>Defensa Personal</h3>
                 <p>Combate cuerpo a cuerpo real para situaciones de riesgo.</p>
@@ -136,8 +298,17 @@
                     <button>Inscribirme</button>
                 </a>
             </div>
-
         </div>
+    </div>
+
+    <div class="aliados">
+        <h2 style="color: #00ff88; margin-bottom: 25px;">Aliados Educativos</h2>
+        <img src="{{ url_for('static', filename='portada.jpg') }}" alt="Aliados educativos">
+    </div>
+
+    <div class="footer">
+        <p>© 2026 F.E.M.P. | Fundación de Enfermeros Militares y Policía</p>
+        <p>Contacto directo por WhatsApp: <a href="https://wa.me/19736290182" target="_blank">+1 973 629 0182</a></p>
     </div>
 
 </body>
