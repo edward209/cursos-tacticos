@@ -4,12 +4,21 @@
     <title>Cursos Tácticos</title>
     <style>
         body {
-            background: linear-gradient(black, #0d0d0d);
-            color: #00ff88;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding-top: 120px;
             margin: 0;
+            font-family: Arial, sans-serif;
+            color: #00ff88;
+            text-align: center;
+
+            /* 🔥 FONDO CON TU IMAGEN */
+            background:
+                linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)),
+                url("{{ url_for('static', filename='portada.jpg') }}");
+            background-size: cover;
+            background-position: center;
+        }
+
+        .contenedor {
+            padding-top: 100px;
         }
 
         h1 {
@@ -20,6 +29,15 @@
         p {
             font-size: 20px;
             color: #cccccc;
+        }
+
+        .logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid #00ff88;
+            margin-bottom: 20px;
+            background: white;
         }
 
         button {
@@ -57,7 +75,7 @@
             padding: 20px;
             width: 260px;
             border-radius: 8px;
-            background-color: #111111;
+            background-color: rgba(0,0,0,0.8);
         }
 
         .curso h3 {
@@ -76,17 +94,25 @@
 </head>
 <body>
 
-    <h1>CURSOS TÁCTICOS</h1>
-    <p>Entrenamiento real. Disciplina. Dominio total.</p>
+    <div class="contenedor">
 
-    <a href="/cursos">
-        <button>VER CURSOS</button>
-    </a>
+        <!-- 🔥 LOGO -->
+        <img src="{{ url_for('static', filename='logo.jpg') }}" class="logo">
+
+        <h1>CURSOS TÁCTICOS</h1>
+        <p>Entrenamiento real. Disciplina. Dominio total.</p>
+
+        <a href="/cursos">
+            <button>VER CURSOS</button>
+        </a>
+
+    </div>
 
     <div class="cursos">
         <h2 style="color: #00ff88;">CURSOS DESTACADOS</h2>
 
         <div class="contenedor-cursos">
+
             <div class="curso">
                 <h3>Defensa Personal</h3>
                 <p>Combate cuerpo a cuerpo real para situaciones de riesgo.</p>
@@ -110,6 +136,7 @@
                     <button>Inscribirme</button>
                 </a>
             </div>
+
         </div>
     </div>
 
