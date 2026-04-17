@@ -4,17 +4,14 @@ import os
 
 app = Flask(__name__)
 
-# Página principal
 @app.route('/')
 def inicio():
     return render_template('index.html')
 
-# Página de cursos
 @app.route('/cursos')
 def cursos():
     return render_template('cursos.html')
 
-# Página de inscripción
 @app.route('/inscripcion', methods=['GET', 'POST'])
 def inscripcion():
     if request.method == 'POST':
@@ -37,6 +34,24 @@ def inscripcion():
 
     return render_template('inscripcion.html')
 
+@app.route('/inscritos')
+def inscritos():
+    registros = []
+    archivo = 'inscripciones.csv'
+
+    if os.path.isfile(archivo):
+        with open(archivo, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            next(reader, None)  # saltar encabezado
+            for fila in reader:
+                if len(fila) == 3:
+                    registros.append({
+                        'nombre': fila[0],
+                        'correo': fila[1],
+                        'curso': fila[2]
+                    })
+
+    return render_template('inscritos.html', registros=registros)
 
 if __name__ == '__main__':
     app.run(debug=True)

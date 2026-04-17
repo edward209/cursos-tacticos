@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panel de Inscritos</title>
+
+    <style>
+        body {
+            background: black;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+        }
+
+        table {
+            width: 80%;
+            margin: 30px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #00ff88;
+            padding: 10px;
+        }
+
+        th {
+            color: #00ff88;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>INSCRITOS</h1>
+
+<table>
+    <tr>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Curso</th>
+    </tr>
+
+    {% for r in registros %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ r.nombre }}</td>
+        <td>{{ r.correo }}</td>
+        <td>{{ r.curso }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+<a href="/">Volver</a>
+
+</body>
+</html>
