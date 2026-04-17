@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cursos Tácticos</title>
+    <style>
+        body {
+            background: linear-gradient(black, #0d0d0d);
+            color: #00ff88;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 120px;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 60px;
+            letter-spacing: 3px;
+        }
+
+        p {
+            font-size: 20px;
+            color: #cccccc;
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 15px 40px;
+            background-color: #00ff88;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #00cc6a;
+            transform: scale(1.05);
+        }
+
+        .cursos {
+            margin-top: 80px;
+            padding-bottom: 80px;
+        }
+
+        .contenedor-cursos {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .curso {
+            border: 1px solid #00ff88;
+            padding: 20px;
+            width: 260px;
+            border-radius: 8px;
+            background-color: #111111;
+        }
+
+        .curso h3 {
+            color: #00ff88;
+        }
+
+        .curso p {
+            color: #cccccc;
+            font-size: 16px;
+        }
+
+        .curso a button {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>CURSOS TÁCTICOS</h1>
+    <p>Entrenamiento real. Disciplina. Dominio total.</p>
+
+    <a href="/cursos">
+        <button>VER CURSOS</button>
+    </a>
+
+    <div class="cursos">
+        <h2 style="color: #00ff88;">CURSOS DESTACADOS</h2>
+
+        <div class="contenedor-cursos">
+            <div class="curso">
+                <h3>Defensa Personal</h3>
+                <p>Combate cuerpo a cuerpo real para situaciones de riesgo.</p>
+                <a href="/inscripcion">
+                    <button>Inscribirme</button>
+                </a>
+            </div>
+
+            <div class="curso">
+                <h3>Supervivencia</h3>
+                <p>Aprende técnicas para sobrevivir en cualquier entorno.</p>
+                <a href="/inscripcion">
+                    <button>Inscribirme</button>
+                </a>
+            </div>
+
+            <div class="curso">
+                <h3>Tiro Táctico</h3>
+                <p>Entrenamiento avanzado orientado a precisión y reacción.</p>
+                <a href="/inscripcion">
+                    <button>Inscribirme</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

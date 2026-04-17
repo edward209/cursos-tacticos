@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inscripción</title>
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #00ff88;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .formulario {
+            width: 400px;
+            margin: 80px auto;
+            background-color: #111111;
+            padding: 30px;
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #00ff88;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #00cc6a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="formulario">
+        <h1>Formulario de Inscripción</h1>
+
+       <form method="POST">
+    <input type="text" name="nombre" placeholder="Nombre completo" required>
+    <input type="email" name="correo" placeholder="Correo electrónico" required>
+
+    <select name="curso" required>
+        <option value="">Selecciona un curso</option>
+        <option>Defensa Personal</option>
+        <option>Supervivencia</option>
+        <option>Tiro Táctico</option>
+    </select>
+
+    <button type="submit">Enviar inscripción</button>
+</form>
+
+</body>
+</html>
