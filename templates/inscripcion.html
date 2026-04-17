@@ -27,7 +27,6 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            backdrop-filter: blur(8px);
         }
 
         .topbar-left {
@@ -83,7 +82,7 @@
 
         .form-box {
             width: 100%;
-            max-width: 520px;
+            max-width: 560px;
             background: rgba(0,0,0,0.78);
             border: 1px solid rgba(0,255,136,0.35);
             border-radius: 18px;
@@ -139,6 +138,17 @@
         button:hover {
             background: #00cc6a;
         }
+
+        .info {
+            margin-top: 20px;
+            color: #d0d0d0;
+            line-height: 1.8;
+            text-align: left;
+        }
+
+        .info strong {
+            color: #00ff88;
+        }
     </style>
 </head>
 <body>
@@ -151,7 +161,7 @@
 
         <div class="topbar-links">
             <a href="/">Inicio</a>
-            <a href="/cursos">Cursos</a>
+            <a href="/cursos">Oferta académica</a>
             <a href="/inscripcion">Inscripción</a>
         </div>
     </div>
@@ -159,8 +169,8 @@
     <div class="contenedor">
         <div class="form-box">
             <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
-            <h1>Formulario de inscripción</h1>
-            <p>Completa tus datos para reservar tu cupo en el curso.</p>
+            <h1>📢 Inscripciones abiertas</h1>
+            <p>Completa tus datos para reservar tu cupo en nuestros programas de capacitación.</p>
 
             <form method="POST">
                 <input type="text" name="nombre" placeholder="Nombre completo" required>
@@ -168,16 +178,43 @@
 
                 <select name="curso" required>
                     <option value="">Selecciona un curso</option>
-                    <option>Defensa Personal</option>
-                    <option>Supervivencia</option>
-                    <option>Tiro Táctico</option>
                     <option>Medicina Táctica</option>
-                    <option>Primer Respondiente</option>
-                    <option>Rescate y Evacuación</option>
+                    <option>Manejo de Hemorragias</option>
+                    <option>Manejo de Fracturas</option>
+                    <option>Sutura</option>
+                    <option>Canalización de Paciente</option>
+                    <option>Curso de Manejo de Mina</option>
+                    <option>Concepto y Manejo del Paciente en Aeromedicina</option>
+                    <option>Manejo de Arma de Fuego</option>
+                    <option>Primer respondiente en disturbios públicos</option>
+                    <option>Primeros Auxilios Básicos</option>
+                    <option>Primeros Auxilios Psicológicos</option>
+                    <option>Prevención del Suicidio y Autolesión</option>
+                    <option>Intervención en Crisis y Desastres</option>
+                    <option>Atención Psicosocial a Víctimas de Violencia</option>
+                    <option>Prevención del Abuso Sexual Infantil</option>
+                    <option>Cuidado y Prevención del Maltrato Infantil</option>
+                    <option>Salud Mental para Cuidadores</option>
+                    <option>Básico de Inteligencia</option>
+                    <option>Inteligencia Avanzada</option>
+                    <option>Contrainteligencia</option>
+                    <option>Protección VP</option>
+                    <option>Método de la Investigación Criminalista</option>
+                    <option>Análisis Superior</option>
+                    <option>Derechos Humanos</option>
+                    <option>Detective Privado</option>
+                    <option>Reclutamiento de Fuentes</option>
+                    <option>Perfil Sospechoso</option>
                 </select>
 
                 <button type="submit">Enviar inscripción</button>
             </form>
+
+            <div class="info">
+                <strong>WhatsApp:</strong> (849) 852-5975<br>
+                <strong>Facebook:</strong> FEMP RD<br>
+                <strong>Instagram:</strong> Fundación de Enfermeros Militares y Policías
+            </div>
         </div>
     </div>
 

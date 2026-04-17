@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cursos | F.E.M.P.</title>
+    <title>Oferta Académica | F.E.M.P.</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -30,7 +30,6 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            backdrop-filter: blur(8px);
         }
 
         .topbar-left {
@@ -99,47 +98,40 @@
             font-size: 18px;
         }
 
-        .cards {
+        .bloques {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            gap: 22px;
         }
 
-        .card {
+        .bloque {
             background: rgba(0,0,0,0.78);
             border: 1px solid rgba(0,255,136,0.35);
             border-radius: 16px;
-            padding: 24px;
+            padding: 26px;
             box-shadow: 0 12px 28px rgba(0,0,0,0.25);
         }
 
-        .badge {
-            display: inline-block;
-            background: rgba(0,255,136,0.12);
-            color: #00ff88;
-            border: 1px solid rgba(0,255,136,0.35);
-            border-radius: 999px;
-            padding: 6px 12px;
-            font-size: 13px;
-            margin-bottom: 14px;
-            font-weight: bold;
-        }
-
-        .card h3 {
+        .bloque h2 {
             margin-top: 0;
             color: #00ff88;
-            font-size: 24px;
+            font-size: 30px;
         }
 
-        .card p {
+        .bloque ul {
+            margin: 0;
+            padding-left: 22px;
             color: #d8d8d8;
-            line-height: 1.7;
+            line-height: 1.9;
+        }
+
+        .cta {
+            text-align: center;
+            margin-top: 32px;
         }
 
         .btn {
             display: inline-block;
-            margin-top: 12px;
-            padding: 14px 20px;
+            padding: 14px 22px;
             background: #00ff88;
             color: black;
             text-decoration: none;
@@ -151,17 +143,6 @@
         .btn:hover {
             background: #00cc6a;
             transform: translateY(-2px);
-        }
-
-        .footer-link {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .footer-link a {
-            color: #00ff88;
-            text-decoration: none;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -175,7 +156,7 @@
 
         <div class="topbar-links">
             <a href="/">Inicio</a>
-            <a href="/cursos">Cursos</a>
+            <a href="/cursos">Oferta académica</a>
             <a href="/inscripcion">Inscripción</a>
             <a href="/login">Panel</a>
         </div>
@@ -183,56 +164,65 @@
 
     <div class="contenedor">
         <div class="titulo">
-            <h1>Programas de entrenamiento</h1>
-            <p>Capacitación táctica, operativa y profesional</p>
+            <h1>📚 Oferta Académica</h1>
+            <p>Programas formativos del Centro Nacional de Capacitaciones</p>
         </div>
 
-        <div class="cards">
-            <div class="card">
-                <div class="badge">Operativo</div>
-                <h3>Defensa Personal</h3>
-                <p>Técnicas reales de control, reacción y protección en escenarios de riesgo.</p>
-                <a href="/inscripcion" class="btn">Inscribirme</a>
+        <div class="bloques">
+            <div class="bloque">
+                <h2>⚕️ Área de Medicina Táctica</h2>
+                <ul>
+                    <li>Medicina Táctica</li>
+                    <li>Manejo de Hemorragias</li>
+                    <li>Manejo de Fracturas</li>
+                    <li>Sutura</li>
+                    <li>Canalización de Paciente</li>
+                    <li>Curso de Manejo de Mina</li>
+                    <li>Concepto y Manejo del Paciente en Aeromedicina</li>
+                    <li>Manejo de Arma de Fuego</li>
+                    <li>Primer respondiente en disturbios públicos</li>
+                </ul>
             </div>
 
-            <div class="card">
-                <div class="badge">Supervivencia</div>
-                <h3>Supervivencia Extrema</h3>
-                <p>Entrenamiento para resistir, adaptarse y sobrevivir en entornos hostiles.</p>
-                <a href="/inscripcion" class="btn">Inscribirme</a>
+            <div class="bloque">
+                <h2>🚑 Primeros Auxilios</h2>
+                <ul>
+                    <li>Primeros Auxilios Básicos</li>
+                    <li>Primeros Auxilios Psicológicos</li>
+                </ul>
             </div>
 
-            <div class="card">
-                <div class="badge">Avanzado</div>
-                <h3>Tiro Táctico</h3>
-                <p>Precisión, disciplina y respuesta táctica en situaciones exigentes.</p>
-                <a href="/inscripcion" class="btn">Inscribirme</a>
+            <div class="bloque">
+                <h2>🧠 Salud Mental y Atención Psicosocial</h2>
+                <ul>
+                    <li>Prevención del Suicidio y Autolesión</li>
+                    <li>Intervención en Crisis y Desastres</li>
+                    <li>Atención Psicosocial a Víctimas de Violencia</li>
+                    <li>Prevención del Abuso Sexual Infantil</li>
+                    <li>Cuidado y Prevención del Maltrato Infantil</li>
+                    <li>Salud Mental para Cuidadores</li>
+                </ul>
             </div>
 
-            <div class="card">
-                <div class="badge">Salud</div>
-                <h3>Medicina Táctica</h3>
-                <p>Atención prehospitalaria aplicada a escenarios operativos y de combate.</p>
-                <a href="/inscripcion" class="btn">Inscribirme</a>
-            </div>
-
-            <div class="card">
-                <div class="badge">Emergencias</div>
-                <h3>Primer Respondiente</h3>
-                <p>Protocolos de atención inmediata en situaciones de urgencia y crisis.</p>
-                <a href="/inscripcion" class="btn">Inscribirme</a>
-            </div>
-
-            <div class="card">
-                <div class="badge">Rescate</div>
-                <h3>Rescate y Evacuación</h3>
-                <p>Técnicas de extracción, traslado y evacuación en incidentes complejos.</p>
-                <a href="/inscripcion" class="btn">Inscribirme</a>
+            <div class="bloque">
+                <h2>🛡️ Cursos Complementarios</h2>
+                <ul>
+                    <li>Básico de Inteligencia</li>
+                    <li>Inteligencia Avanzada</li>
+                    <li>Contrainteligencia</li>
+                    <li>Protección VP</li>
+                    <li>Método de la Investigación Criminalista</li>
+                    <li>Análisis Superior</li>
+                    <li>Derechos Humanos</li>
+                    <li>Detective Privado</li>
+                    <li>Reclutamiento de Fuentes</li>
+                    <li>Perfil Sospechoso</li>
+                </ul>
             </div>
         </div>
 
-        <div class="footer-link">
-            <a href="/">← Volver al inicio</a>
+        <div class="cta">
+            <a href="/inscripcion" class="btn">Inscribirme ahora</a>
         </div>
     </div>
 

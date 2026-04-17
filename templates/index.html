@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>F.E.M.P. | Cursos Tácticos</title>
+    <title>F.E.M.P. | Centro Nacional de Capacitaciones</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -14,7 +14,7 @@
             font-family: Arial, sans-serif;
             color: white;
             background:
-                linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.9)),
+                linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.92)),
                 url("{{ url_for('static', filename='portada.jpg') }}");
             background-size: cover;
             background-position: center;
@@ -96,17 +96,30 @@
         }
 
         .hero h1 {
-            margin: 28px 0 14px;
-            font-size: 58px;
+            margin: 24px 0 12px;
+            font-size: 52px;
             color: #00ff88;
         }
 
+        .hero h3 {
+            margin: 0 0 18px;
+            font-size: 26px;
+            color: white;
+        }
+
         .hero p {
-            max-width: 850px;
+            max-width: 900px;
             margin: 0 auto;
             color: #d8d8d8;
             font-size: 20px;
             line-height: 1.7;
+        }
+
+        .lema {
+            margin-top: 22px;
+            font-size: 22px;
+            font-style: italic;
+            color: #ffffff;
         }
 
         .hero-actions {
@@ -195,6 +208,23 @@
             line-height: 1.7;
         }
 
+        .info-box {
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .info-box ul {
+            text-align: left;
+            color: #d8d8d8;
+            line-height: 1.9;
+            padding-left: 20px;
+        }
+
         .aliados {
             background: rgba(0,0,0,0.78);
             border: 1px solid rgba(0,255,136,0.35);
@@ -214,6 +244,11 @@
             padding: 30px 20px 50px;
             color: #bfbfbf;
             font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .footer strong {
+            color: #00ff88;
         }
 
         .whatsapp-float {
@@ -258,10 +293,18 @@
             }
 
             .hero h1 {
-                font-size: 40px;
+                font-size: 38px;
+            }
+
+            .hero h3 {
+                font-size: 22px;
             }
 
             .hero p {
+                font-size: 18px;
+            }
+
+            .lema {
                 font-size: 18px;
             }
         }
@@ -277,7 +320,7 @@
 
         <div class="topbar-links">
             <a href="/">Inicio</a>
-            <a href="/cursos">Cursos</a>
+            <a href="/cursos">Oferta académica</a>
             <a href="/inscripcion">Inscripción</a>
             <a href="/login">Panel</a>
         </div>
@@ -285,39 +328,57 @@
 
     <section class="hero">
         <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="hero-logo">
-        <h1>CURSOS TÁCTICOS</h1>
-        <p>
-            Formación especializada en medicina táctica, supervivencia, rescate y atención
-            prehospitalaria para personal militar, policial y civil.
-        </p>
+        <h1>🛡️ FUNDACIÓN DE ENFERMEROS MILITARES Y POLICÍA</h1>
+        <h3>🏥 Centro Nacional de Capacitaciones</h3>
+        <p class="lema">“Capacítate con profesionales en el área de salud táctica y atención integral”</p>
 
         <div class="hero-actions">
-            <a href="/cursos" class="btn">Ver cursos</a>
+            <a href="/cursos" class="btn">Ver oferta académica</a>
             <a href="/inscripcion" class="btn btn-outline">Inscribirme ahora</a>
         </div>
     </section>
 
     <section class="section">
         <div class="section-title">
-            <h2>Programas destacados</h2>
-            <p>Entrenamiento estructurado, práctico y orientado a resultados reales</p>
+            <h2>Áreas principales de formación</h2>
+            <p>Programas especializados orientados a capacitación táctica, salud, inteligencia y respuesta integral</p>
         </div>
 
         <div class="cards">
             <div class="card">
-                <h3>Defensa Personal</h3>
-                <p>Combate cuerpo a cuerpo real para situaciones de riesgo y reacción inmediata.</p>
+                <h3>⚕️ Medicina Táctica</h3>
+                <p>Capacitación en atención prehospitalaria, control de hemorragias, manejo de fracturas, sutura, canalización y respuesta en escenarios tácticos.</p>
             </div>
 
             <div class="card">
-                <h3>Supervivencia</h3>
-                <p>Aprende técnicas para sobrevivir, adaptarte y responder en cualquier entorno.</p>
+                <h3>🚑 Primeros Auxilios</h3>
+                <p>Formación en primeros auxilios básicos y psicológicos para responder adecuadamente ante emergencias y situaciones críticas.</p>
             </div>
 
             <div class="card">
-                <h3>Tiro Táctico</h3>
-                <p>Entrenamiento avanzado orientado a precisión, reacción y disciplina operativa.</p>
+                <h3>🧠 Salud Mental</h3>
+                <p>Programas sobre prevención del suicidio, intervención en crisis, atención psicosocial y protección integral de víctimas y cuidadores.</p>
             </div>
+
+            <div class="card">
+                <h3>🛡️ Cursos Complementarios</h3>
+                <p>Entrenamientos en inteligencia, contrainteligencia, investigación criminalista, derechos humanos, protección y análisis superior.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-title">
+            <h2>📢 Inscripciones abiertas</h2>
+            <p>Contáctanos y reserva tu cupo en nuestros programas de formación</p>
+        </div>
+
+        <div class="info-box">
+            <ul>
+                <li><strong>WhatsApp:</strong> (849) 852-5975</li>
+                <li><strong>Facebook:</strong> FEMP RD</li>
+                <li><strong>Instagram:</strong> Fundación de Enfermeros Militares y Policías</li>
+            </ul>
         </div>
     </section>
 
@@ -333,10 +394,12 @@
     </section>
 
     <div class="footer">
-        © 2026 F.E.M.P. | Fundación de Enfermeros Militares y Policía
+        <strong>F.E.M.P.</strong><br>
+        Fundación de Enfermeros Militares y Policía<br>
+        Centro Nacional de Capacitaciones
     </div>
 
-    <a href="https://wa.me/19736290182" class="whatsapp-float" target="_blank" aria-label="WhatsApp">
+    <a href="https://wa.me/18498525975" class="whatsapp-float" target="_blank" aria-label="WhatsApp">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" alt="WhatsApp">
     </a>
 
