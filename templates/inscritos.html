@@ -165,6 +165,31 @@
             width: 100%;
         }
 
+        .filtros {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 22px;
+        }
+
+        .filtros form {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .filtros input,
+        .filtros select {
+            padding: 12px 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            min-width: 220px;
+        }
+
         .acciones {
             margin-bottom: 22px;
             display: flex;
@@ -360,6 +385,23 @@
             <div class="chart-wrap">
                 <canvas id="graficoCursos"></canvas>
             </div>
+        </div>
+
+        <div class="filtros">
+            <form method="GET" action="/inscritos">
+                <input type="text" name="q" placeholder="Buscar por nombre, correo, curso o fecha" value="{{ busqueda }}">
+
+                <select name="area">
+                    <option value="">Todas las áreas</option>
+                    <option value="Medicina Táctica" {% if area_filtro == 'Medicina Táctica' %}selected{% endif %}>Medicina Táctica</option>
+                    <option value="Primeros Auxilios" {% if area_filtro == 'Primeros Auxilios' %}selected{% endif %}>Primeros Auxilios</option>
+                    <option value="Salud Mental" {% if area_filtro == 'Salud Mental' %}selected{% endif %}>Salud Mental</option>
+                    <option value="Cursos Complementarios" {% if area_filtro == 'Cursos Complementarios' %}selected{% endif %}>Cursos Complementarios</option>
+                </select>
+
+                <button type="submit" class="btn">Filtrar</button>
+                <a href="/inscritos" class="btn">Limpiar</a>
+            </form>
         </div>
 
         <div class="acciones">

@@ -128,6 +128,7 @@ def inscritos():
     registros = []
     archivo = 'inscripciones.csv'
     busqueda = request.args.get('q', '').strip().lower()
+    area_filtro = request.args.get('area', '').strip()
 
     if os.path.isfile(archivo):
         with open(archivo, 'r', encoding='utf-8') as f:
@@ -149,15 +150,13 @@ def inscritos():
 
                     texto = f"{fila[0]} {fila[1]} {fila[2]} {fila[3]} {area}".lower()
 
-                    if not busqueda or busqueda in texto:
+                    coincide_texto = (not busqueda or busqueda in texto)
+                    coincide_area = (not area_filtro or area == area_filtro)
+
+                    if coincide_texto and coincide_area:
                         registros.append(registro)
 
     total_inscritos = len(registros)
-
-    cursos_resumen = {}
-    for r in registros:
-        curso = r['curso']
-        cursos_resumen[curso] = cursos_resumen.get(curso, 0) + 1
 
     areas_resumen = {}
     for r in registros:
@@ -173,8 +172,8 @@ def inscritos():
         'inscritos.html',
         registros=registros,
         busqueda=busqueda,
+        area_filtro=area_filtro,
         total_inscritos=total_inscritos,
-        cursos_resumen=cursos_resumen,
         areas_resumen=areas_resumen,
         ultimo_inscrito=ultimo_inscrito,
         grafico_labels=grafico_labels,
