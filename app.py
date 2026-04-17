@@ -11,6 +11,58 @@ USUARIO_PANEL = 'admin'
 CLAVE_PANEL = '12345'
 
 
+def obtener_area(curso):
+    medicina_tactica = [
+        'Medicina Táctica',
+        'Manejo de Hemorragias',
+        'Manejo de Fracturas',
+        'Sutura',
+        'Canalización de Paciente',
+        'Curso de Manejo de Mina',
+        'Concepto y Manejo del Paciente en Aeromedicina',
+        'Manejo de Arma de Fuego',
+        'Primer respondiente en disturbios públicos'
+    ]
+
+    primeros_auxilios = [
+        'Primeros Auxilios Básicos',
+        'Primeros Auxilios Psicológicos'
+    ]
+
+    salud_mental = [
+        'Prevención del Suicidio y Autolesión',
+        'Intervención en Crisis y Desastres',
+        'Atención Psicosocial a Víctimas de Violencia',
+        'Prevención del Abuso Sexual Infantil',
+        'Cuidado y Prevención del Maltrato Infantil',
+        'Salud Mental para Cuidadores'
+    ]
+
+    cursos_complementarios = [
+        'Básico de Inteligencia',
+        'Inteligencia Avanzada',
+        'Contrainteligencia',
+        'Protección VP',
+        'Método de la Investigación Criminalista',
+        'Análisis Superior',
+        'Derechos Humanos',
+        'Detective Privado',
+        'Reclutamiento de Fuentes',
+        'Perfil Sospechoso'
+    ]
+
+    if curso in medicina_tactica:
+        return 'Medicina Táctica'
+    elif curso in primeros_auxilios:
+        return 'Primeros Auxilios'
+    elif curso in salud_mental:
+        return 'Salud Mental'
+    elif curso in cursos_complementarios:
+        return 'Cursos Complementarios'
+    else:
+        return 'Otros'
+
+
 @app.route('/')
 def inicio():
     return render_template('index.html')
@@ -84,15 +136,18 @@ def inscritos():
 
             for i, fila in enumerate(reader):
                 if len(fila) == 4:
+                    area = obtener_area(fila[2])
+
                     registro = {
                         'id': i,
                         'nombre': fila[0],
                         'correo': fila[1],
                         'curso': fila[2],
-                        'fecha': fila[3]
+                        'fecha': fila[3],
+                        'area': area
                     }
 
-                    texto = f"{fila[0]} {fila[1]} {fila[2]} {fila[3]}".lower()
+                    texto = f"{fila[0]} {fila[1]} {fila[2]} {fila[3]} {area}".lower()
 
                     if not busqueda or busqueda in texto:
                         registros.append(registro)
@@ -104,9 +159,15 @@ def inscritos():
         curso = r['curso']
         cursos_resumen[curso] = cursos_resumen.get(curso, 0) + 1
 
+    areas_resumen = {}
+    for r in registros:
+        area = r['area']
+        areas_resumen[area] = areas_resumen.get(area, 0) + 1
+
     ultimo_inscrito = registros[-1] if registros else None
-    grafico_labels = list(cursos_resumen.keys())
-    grafico_valores = list(cursos_resumen.values())
+
+    grafico_labels = list(areas_resumen.keys())
+    grafico_valores = list(areas_resumen.values())
 
     return render_template(
         'inscritos.html',
@@ -114,6 +175,7 @@ def inscritos():
         busqueda=busqueda,
         total_inscritos=total_inscritos,
         cursos_resumen=cursos_resumen,
+        areas_resumen=areas_resumen,
         ultimo_inscrito=ultimo_inscrito,
         grafico_labels=grafico_labels,
         grafico_valores=grafico_valores

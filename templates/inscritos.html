@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Panel de Inscritos</title>
+    <title>Panel de Inscritos | F.E.M.P.</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -25,7 +24,7 @@
 
         .topbar {
             background: rgba(0,0,0,0.92);
-            border-bottom: 1px solid #00ff88;
+            border-bottom: 1px solid rgba(0,255,136,0.35);
             padding: 16px 28px;
             display: flex;
             justify-content: space-between;
@@ -43,7 +42,7 @@
             gap: 12px;
         }
 
-        .topbar img {
+        .topbar-left img {
             width: 52px;
             height: 52px;
             border-radius: 50%;
@@ -52,7 +51,7 @@
             background: white;
         }
 
-        .topbar h2 {
+        .topbar-left h2 {
             margin: 0;
             font-size: 20px;
             color: #00ff88;
@@ -112,7 +111,7 @@
 
         .card {
             background: rgba(0,0,0,0.78);
-            border: 1px solid rgba(0,255,136,0.45);
+            border: 1px solid rgba(0,255,136,0.35);
             border-radius: 16px;
             padding: 24px;
             box-shadow: 0 12px 28px rgba(0,0,0,0.25);
@@ -120,9 +119,8 @@
 
         .card h3 {
             margin-top: 0;
-            margin-bottom: 14px;
             color: #00ff88;
-            font-size: 22px;
+            font-size: 24px;
         }
 
         .numero-principal {
@@ -133,8 +131,8 @@
 
         .card p {
             color: #d8d8d8;
+            line-height: 1.7;
             margin: 8px 0;
-            line-height: 1.5;
         }
 
         .resumen-item {
@@ -146,9 +144,29 @@
             border-bottom: none;
         }
 
+        .grafico {
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+        }
+
+        .grafico h3 {
+            margin-top: 0;
+            color: #00ff88;
+            text-align: center;
+        }
+
+        .chart-wrap {
+            position: relative;
+            height: 340px;
+            width: 100%;
+        }
+
         .acciones {
-            margin-top: 10px;
-            margin-bottom: 28px;
+            margin-bottom: 22px;
             display: flex;
             gap: 14px;
             flex-wrap: wrap;
@@ -192,32 +210,9 @@
             background: #d62c2c;
         }
 
-        .grafico {
-            background: rgba(0,0,0,0.78);
-            border: 1px solid rgba(0,255,136,0.45);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 40px;
-            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
-        }
-
-        .grafico h3 {
-            margin-top: 0;
-            margin-bottom: 20px;
-            color: #00ff88;
-            text-align: center;
-            font-size: 24px;
-        }
-
-        .chart-wrap {
-            position: relative;
-            height: 340px;
-            width: 100%;
-        }
-
         .tabla-box {
             background: rgba(0,0,0,0.78);
-            border: 1px solid rgba(0,255,136,0.45);
+            border: 1px solid rgba(0,255,136,0.35);
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 12px 28px rgba(0,0,0,0.25);
@@ -230,7 +225,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1000px;
+            min-width: 1150px;
         }
 
         th, td {
@@ -263,6 +258,12 @@
             margin: 0;
         }
 
+        .sin-datos {
+            text-align: center;
+            padding: 25px;
+            color: #d0d0d0;
+        }
+
         .footer-link {
             text-align: center;
             margin-top: 26px;
@@ -275,20 +276,10 @@
             font-size: 16px;
         }
 
-        .footer-link a:hover {
-            text-decoration: underline;
-        }
-
-        .sin-datos {
-            text-align: center;
-            padding: 25px;
-            color: #d0d0d0;
-        }
-
         @media (max-width: 768px) {
             .topbar {
-                gap: 15px;
                 justify-content: center;
+                gap: 14px;
             }
 
             .topbar-left {
@@ -307,49 +298,43 @@
             .titulo p {
                 font-size: 16px;
             }
-
-            .acciones {
-                justify-content: center;
-            }
         }
     </style>
 </head>
-
 <body>
 
     <div class="topbar">
         <div class="topbar-left">
             <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
-            <h2>F.E.M.P. - Panel Premium</h2>
+            <h2>F.E.M.P. - Panel Administrativo</h2>
         </div>
 
         <div class="topbar-links">
             <a href="/">Inicio</a>
-            <a href="/cursos">Cursos</a>
+            <a href="/cursos">Oferta académica</a>
             <a href="/inscripcion">Inscripción</a>
             <a href="/logout">Cerrar sesión</a>
         </div>
     </div>
 
     <div class="contenedor">
-
         <div class="titulo">
             <h1>Panel de Inscritos</h1>
-            <p>Resumen, visualización y gestión de registros</p>
+            <p>Resumen estadístico y gestión de participantes del Centro Nacional de Capacitaciones</p>
         </div>
 
         <div class="stats">
             <div class="card">
-                <h3>Total inscritos</h3>
+                <h3>Total de inscritos</h3>
                 <div class="numero-principal">{{ total_inscritos }}</div>
             </div>
 
             <div class="card">
-                <h3>Inscritos por curso</h3>
-                {% if cursos_resumen %}
-                    {% for curso, cantidad in cursos_resumen.items() %}
+                <h3>Inscritos por área</h3>
+                {% if areas_resumen %}
+                    {% for area, cantidad in areas_resumen.items() %}
                         <div class="resumen-item">
-                            <strong>{{ curso }}</strong>: {{ cantidad }}
+                            <strong>{{ area }}</strong>: {{ cantidad }}
                         </div>
                     {% endfor %}
                 {% else %}
@@ -362,6 +347,7 @@
                 {% if ultimo_inscrito %}
                     <p><strong>Nombre:</strong> {{ ultimo_inscrito.nombre }}</p>
                     <p><strong>Curso:</strong> {{ ultimo_inscrito.curso }}</p>
+                    <p><strong>Área:</strong> {{ ultimo_inscrito.area }}</p>
                     <p><strong>Fecha:</strong> {{ ultimo_inscrito.fecha }}</p>
                 {% else %}
                     <p>Sin registros.</p>
@@ -370,7 +356,7 @@
         </div>
 
         <div class="grafico">
-            <h3>Inscritos por curso</h3>
+            <h3>Distribución de inscritos por área académica</h3>
             <div class="chart-wrap">
                 <canvas id="graficoCursos"></canvas>
             </div>
@@ -390,6 +376,7 @@
                         <th>Nombre</th>
                         <th>Correo</th>
                         <th>Curso</th>
+                        <th>Área</th>
                         <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
@@ -400,6 +387,7 @@
                         <td>{{ r.nombre }}</td>
                         <td>{{ r.correo }}</td>
                         <td>{{ r.curso }}</td>
+                        <td>{{ r.area }}</td>
                         <td>{{ r.fecha }}</td>
                         <td>
                             <div class="acciones-fila">
@@ -413,7 +401,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6" class="sin-datos">No hay inscritos registrados.</td>
+                        <td colspan="7" class="sin-datos">No hay inscritos registrados.</td>
                     </tr>
                     {% endfor %}
                 </table>
@@ -423,7 +411,6 @@
         <div class="footer-link">
             <a href="/">← Volver al inicio</a>
         </div>
-
     </div>
 
     <script id="data-json" type="application/json">
@@ -447,7 +434,7 @@
                 datasets: [{
                     label: 'Inscritos',
                     data: data.valores,
-                    backgroundColor: '#00ff88',
+                    backgroundColor: ['#00ff88', '#1e90ff', '#ffcc00', '#ff4d4d'],
                     borderRadius: 10,
                     barPercentage: 0.45,
                     categoryPercentage: 0.55,
