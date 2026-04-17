@@ -1,87 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Inscripción Exitosa</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background:
-                linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.92)),
-                url("{{ url_for('static', filename='portada.jpg') }}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: white;
-            text-align: center;
-        }
-
-        .contenedor {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-        }
-
-        .caja {
-            background-color: rgba(0,0,0,0.8);
-            border: 1px solid #00ff88;
-            border-radius: 12px;
-            padding: 40px;
-            max-width: 550px;
-            width: 100%;
-        }
-
-        .logo {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            border: 3px solid #00ff88;
-            object-fit: cover;
-            background: white;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            color: #00ff88;
-            font-size: 42px;
-            margin-bottom: 15px;
-        }
-
-        p {
-            color: #d5d5d5;
-            font-size: 20px;
-            line-height: 1.6;
-        }
-
-        .btn {
-            display: inline-block;
-            margin-top: 25px;
-            padding: 14px 28px;
-            background-color: #00ff88;
-            color: black;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 6px;
-        }
-
-        .btn:hover {
-            background-color: #00cc6a;
-        }
-    </style>
+<title>Gracias</title>
 </head>
-<body>
 
-    <div class="contenedor">
-        <div class="caja">
-            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
-            <h1>Inscripción completada</h1>
-            <p>Gracias, <strong>{{ nombre }}</strong>. Hemos recibido tu solicitud correctamente.</p>
-            <p>Pronto recibirás más información sobre el curso seleccionado.</p>
-            <a href="/" class="btn">Volver al inicio</a>
-        </div>
-    </div>
+<body style="background:black;color:white;text-align:center;">
+
+<h1>Gracias {{ nombre }}</h1>
+<p>Tu inscripción fue enviada</p>
+
+<a href="/">Volver</a>
 
 </body>
 </html>

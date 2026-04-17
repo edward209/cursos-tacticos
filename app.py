@@ -20,12 +20,12 @@ def inscripcion():
         curso = request.form['curso']
 
         archivo = 'inscripciones.csv'
-        existe_archivo = os.path.isfile(archivo)
+        existe = os.path.isfile(archivo)
 
-        with open(archivo, mode='a', newline='', encoding='utf-8') as file:
-            writer = csv.writer(file)
+        with open(archivo, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
 
-            if not existe_archivo:
+            if not existe:
                 writer.writerow(['Nombre', 'Correo', 'Curso'])
 
             writer.writerow([nombre, correo, curso])
@@ -33,6 +33,7 @@ def inscripcion():
         return render_template('gracias.html', nombre=nombre)
 
     return render_template('inscripcion.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

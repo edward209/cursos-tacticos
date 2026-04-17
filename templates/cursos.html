@@ -1,208 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cursos | F.E.M.P.</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            color: white;
-            background:
-                linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.92)),
-                url("{{ url_for('static', filename='portada.jpg') }}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-
-        .topbar {
-            background: rgba(0,0,0,0.9);
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #00ff88;
-        }
-
-        .topbar img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 2px solid #00ff88;
-            background: white;
-        }
-
-        .topbar a {
-            color: #00ff88;
-            text-decoration: none;
-            margin-left: 15px;
-            font-weight: bold;
-        }
-
-        .header {
-            text-align: center;
-            padding: 60px 20px 20px;
-        }
-
-        .header h1 {
-            font-size: 50px;
-            color: #00ff88;
-        }
-
-        .header p {
-            color: #d0d0d0;
-            font-size: 18px;
-        }
-
-        .contenedor {
-            max-width: 1200px;
-            margin: 40px auto 80px;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .curso {
-            background-color: rgba(0,0,0,0.85);
-            border: 1px solid #00ff88;
-            border-radius: 12px;
-            padding: 25px;
-            transition: 0.3s;
-        }
-
-        .curso:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,255,136,0.2);
-        }
-
-        .curso h2 {
-            color: #00ff88;
-        }
-
-        .curso p {
-            color: #cccccc;
-            line-height: 1.6;
-        }
-
-        .btn {
-            display: block;
-            margin-top: 15px;
-            padding: 14px;
-            background-color: #00ff88;
-            color: black;
-            text-align: center;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 6px;
-        }
-
-        .btn:hover {
-            background-color: #00cc6a;
-        }
-
-        .badge {
-            display: inline-block;
-            background: #00ff88;
-            color: black;
-            font-size: 12px;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        .volver {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .volver a {
-            color: #00ff88;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-            .topbar {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .header h1 {
-                font-size: 35px;
-            }
-        }
-    </style>
+<title>Cursos</title>
+<style>
+body {background:black;color:white;text-align:center;}
+.curso {border:1px solid #00ff88;margin:20px;padding:20px;}
+</style>
 </head>
 <body>
 
-    <div class="topbar">
-        <div>
-            <img src="{{ url_for('static', filename='logo.jpg') }}">
-        </div>
+<h1>CURSOS</h1>
 
-        <div>
-            <a href="/">Inicio</a>
-            <a href="/inscripcion">Inscripción</a>
-        </div>
-    </div>
+<div class="curso">
+<h2>Defensa Personal</h2>
+<a href="/inscripcion">Inscribirme</a>
+</div>
 
-    <div class="header">
-        <h1>PROGRAMAS DE ENTRENAMIENTO</h1>
-        <p>Capacitación táctica, operativa y profesional</p>
-    </div>
+<div class="curso">
+<h2>Supervivencia</h2>
+<a href="/inscripcion">Inscribirme</a>
+</div>
 
-    <div class="contenedor">
-
-        <div class="curso">
-            <div class="badge">Operativo</div>
-            <h2>Defensa Personal</h2>
-            <p>Técnicas reales de combate y control en situaciones de alto riesgo.</p>
-            <a href="/inscripcion" class="btn">Inscribirme</a>
-        </div>
-
-        <div class="curso">
-            <div class="badge">Supervivencia</div>
-            <h2>Supervivencia Extrema</h2>
-            <p>Entrenamiento para resistir, adaptarse y sobrevivir en entornos hostiles.</p>
-            <a href="/inscripcion" class="btn">Inscribirme</a>
-        </div>
-
-        <div class="curso">
-            <div class="badge">Avanzado</div>
-            <h2>Tiro Táctico</h2>
-            <p>Precisión, reacción y disciplina en escenarios reales.</p>
-            <a href="/inscripcion" class="btn">Inscribirme</a>
-        </div>
-
-        <div class="curso">
-            <div class="badge">Salud</div>
-            <h2>Medicina Táctica</h2>
-            <p>Atención prehospitalaria en situaciones críticas y combate.</p>
-            <a href="/inscripcion" class="btn">Inscribirme</a>
-        </div>
-
-        <div class="curso">
-            <div class="badge">Emergencias</div>
-            <h2>Primer Respondiente</h2>
-            <p>Protocolos de atención inmediata en emergencias.</p>
-            <a href="/inscripcion" class="btn">Inscribirme</a>
-        </div>
-
-        <div class="curso">
-            <div class="badge">Rescate</div>
-            <h2>Rescate y Evacuación</h2>
-            <p>Técnicas de extracción y evacuación en escenarios complejos.</p>
-            <a href="/inscripcion" class="btn">Inscribirme</a>
-        </div>
-
-    </div>
-
-    <div class="volver">
-        <a href="/">← Volver al inicio</a>
-    </div>
+<div class="curso">
+<h2>Tiro Táctico</h2>
+<a href="/inscripcion">Inscribirme</a>
+</div>
 
 </body>
 </html>
