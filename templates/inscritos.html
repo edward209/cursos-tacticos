@@ -3,6 +3,8 @@
 <head>
     <title>Panel de Inscritos</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         body {
             margin: 0;
@@ -16,40 +18,8 @@
             color: white;
         }
 
-        .topbar {
-            background: rgba(0,0,0,0.9);
-            border-bottom: 1px solid #00ff88;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .topbar .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .topbar img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #00ff88;
-            background: white;
-        }
-
-        .topbar a {
-            color: #00ff88;
-            text-decoration: none;
-            font-weight: bold;
-            margin-left: 15px;
-        }
-
         .contenedor {
-            max-width: 1250px;
+            max-width: 1200px;
             margin: 40px auto;
             padding: 20px;
         }
@@ -57,329 +27,217 @@
         h1 {
             text-align: center;
             color: #00ff88;
-            margin-bottom: 10px;
         }
 
-        .sub {
-            text-align: center;
-            color: #d0d0d0;
-            margin-bottom: 30px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        .stats {
+            display: flex;
             gap: 20px;
+            flex-wrap: wrap;
             margin-bottom: 30px;
         }
 
-        .stat-card {
-            background: rgba(0,0,0,0.82);
+        .card {
+            flex: 1;
+            min-width: 250px;
+            background: rgba(0,0,0,0.8);
             border: 1px solid #00ff88;
-            border-radius: 10px;
             padding: 20px;
+            border-radius: 10px;
         }
 
-        .stat-card h3 {
-            margin-top: 0;
-            color: #00ff88;
-            font-size: 20px;
-        }
-
-        .stat-num {
-            font-size: 34px;
-            font-weight: bold;
-            color: white;
-            margin-top: 10px;
-        }
-
-        .stat-text {
-            color: #d0d0d0;
-            line-height: 1.6;
-        }
-
-        .curso-linea {
-            margin-bottom: 10px;
-            color: #d0d0d0;
-        }
-
-        .curso-linea strong {
-            color: #00ff88;
+        .grafico {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #00ff88;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            height: 300px;
         }
 
         .acciones {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
             margin-bottom: 20px;
-        }
-
-        .buscador-form {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
         }
 
-        .buscador-form input {
-            padding: 12px 14px;
-            min-width: 260px;
-            border: none;
-            border-radius: 6px;
-            font-size: 15px;
-        }
-
         .btn {
-            display: inline-block;
-            padding: 12px 18px;
+            padding: 10px 16px;
             background: #00ff88;
             color: black;
             text-decoration: none;
             border: none;
-            border-radius: 6px;
-            font-weight: bold;
+            border-radius: 5px;
             cursor: pointer;
-        }
-
-        .btn:hover {
-            background: #00cc6a;
-        }
-
-        .btn-sec {
-            background: transparent;
-            color: #00ff88;
-            border: 1px solid #00ff88;
-        }
-
-        .btn-sec:hover {
-            background: #00ff88;
-            color: black;
+            font-weight: bold;
         }
 
         .btn-danger {
-            background: #ff4d4d;
+            background: red;
             color: white;
-            padding: 10px 14px;
-        }
-
-        .btn-danger:hover {
-            background: #d93636;
         }
 
         .btn-edit {
             background: #1e90ff;
             color: white;
-            padding: 10px 14px;
-            margin-right: 8px;
-        }
-
-        .btn-edit:hover {
-            background: #1877d9;
-        }
-
-        .contador {
-            margin: 20px 0;
-            text-align: center;
-            font-size: 18px;
-            color: #ffffff;
-        }
-
-        .badge {
-            display: inline-block;
-            background: #00ff88;
-            color: black;
-            font-weight: bold;
-            padding: 6px 12px;
-            border-radius: 20px;
-            margin-left: 8px;
-        }
-
-        .tabla-box {
-            background: rgba(0,0,0,0.8);
-            border: 1px solid #00ff88;
-            border-radius: 10px;
-            overflow-x: auto;
-            padding: 15px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1050px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #00ff88;
         }
 
         th, td {
-            padding: 14px;
+            padding: 10px;
+            border-bottom: 1px solid #00ff88;
             text-align: left;
-            border-bottom: 1px solid rgba(0,255,136,0.25);
         }
 
         th {
             color: #00ff88;
-            background: rgba(0,255,136,0.08);
         }
 
-        tr:hover {
-            background: rgba(0,255,136,0.05);
-        }
-
-        .vacio {
-            text-align: center;
-            color: #d0d0d0;
-            padding: 30px 0;
-        }
-
-        .footer-link {
-            text-align: center;
-            margin-top: 25px;
-        }
-
-        .footer-link a {
-            color: #00ff88;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .acciones-fila {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .form-eliminar {
-            margin: 0;
-        }
-
-        @media (max-width: 768px) {
-            .acciones {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .buscador-form {
-                width: 100%;
-            }
-
-            .buscador-form input {
-                min-width: 100%;
-            }
+        form {
+            display: inline;
         }
     </style>
 </head>
+
 <body>
 
-    <div class="topbar">
-        <div class="logo-area">
-            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
-            <strong>F.E.M.P. - Panel de Inscritos</strong>
+<div class="contenedor">
+
+    <h1>Panel de Inscritos</h1>
+
+    <div class="stats">
+        <div class="card">
+            <h3>Total inscritos</h3>
+            <h2>{{ total_inscritos }}</h2>
         </div>
 
-        <div>
-            <a href="/">Inicio</a>
-            <a href="/cursos">Cursos</a>
-            <a href="/inscripcion">Inscripción</a>
-            <a href="/logout">Cerrar sesión</a>
-        </div>
-    </div>
-
-    <div class="contenedor">
-        <h1>Panel de Inscritos</h1>
-        <p class="sub">Listado y resumen de personas registradas en los cursos</p>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total de inscritos</h3>
-                <div class="stat-num">{{ total_inscritos }}</div>
-            </div>
-
-            <div class="stat-card">
-                <h3>Inscritos por curso</h3>
-                <div class="stat-text">
-                    {% if cursos_resumen %}
-                        {% for curso, cantidad in cursos_resumen.items() %}
-                            <div class="curso-linea">
-                                <strong>{{ curso }}</strong>: {{ cantidad }}
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        No hay datos todavía.
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <h3>Último inscrito</h3>
-                <div class="stat-text">
-                    {% if ultimo_inscrito %}
-                        <strong>{{ ultimo_inscrito.nombre }}</strong><br>
-                        {{ ultimo_inscrito.curso }}<br>
-                        {{ ultimo_inscrito.fecha }}
-                    {% else %}
-                        Sin registros todavía.
-                    {% endif %}
-                </div>
-            </div>
+        <div class="card">
+            <h3>Por curso</h3>
+            {% for curso, cantidad in cursos_resumen.items() %}
+                <p>{{ curso }}: {{ cantidad }}</p>
+            {% endfor %}
         </div>
 
-        <div class="acciones">
-            <form method="GET" action="/inscritos" class="buscador-form">
-                <input type="text" name="q" placeholder="Buscar por nombre, correo, curso o fecha" value="{{ busqueda }}">
-                <button type="submit" class="btn">Buscar</button>
-                <a href="/inscritos" class="btn btn-sec">Limpiar</a>
-            </form>
-
-            <a href="/descargar-inscritos" class="btn">Descargar CSV</a>
-        </div>
-
-        <div class="contador">
-            Resultados encontrados:
-            <span class="badge">{{ registros|length }}</span>
-        </div>
-
-        <div class="tabla-box">
-            {% if registros %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Curso</th>
-                        <th>Fecha</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for r in registros %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ r.nombre }}</td>
-                        <td>{{ r.correo }}</td>
-                        <td>{{ r.curso }}</td>
-                        <td>{{ r.fecha }}</td>
-                        <td>
-                            <div class="acciones-fila">
-                                <a href="/editar-inscrito/{{ r.id }}" class="btn btn-edit">Editar</a>
-
-                                <form method="POST" action="/eliminar-inscrito/{{ r.id }}" class="form-eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar este inscrito?');">
-                                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="card">
+            <h3>Último inscrito</h3>
+            {% if ultimo_inscrito %}
+                <p>{{ ultimo_inscrito.nombre }}</p>
+                <p>{{ ultimo_inscrito.curso }}</p>
+                <p>{{ ultimo_inscrito.fecha }}</p>
             {% else %}
-            <div class="vacio">No se encontraron registros.</div>
+                <p>Sin datos</p>
             {% endif %}
         </div>
-
-        <div class="footer-link">
-            <a href="/">← Volver al inicio</a>
-        </div>
     </div>
+
+    <div class="grafico">
+        <h3>Inscritos por curso</h3>
+        <canvas id="graficoCursos"></canvas>
+    </div>
+
+    <div class="acciones">
+        <a href="/descargar-inscritos" class="btn">Descargar CSV</a>
+        <a href="/descargar-excel" class="btn">Descargar Excel</a>
+        <a href="/logout" class="btn">Cerrar sesión</a>
+    </div>
+
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Curso</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+
+        {% for r in registros %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ r.nombre }}</td>
+            <td>{{ r.correo }}</td>
+            <td>{{ r.curso }}</td>
+            <td>{{ r.fecha }}</td>
+            <td>
+                <a href="/editar-inscrito/{{ r.id }}" class="btn btn-edit">Editar</a>
+
+                <form method="POST" action="/eliminar-inscrito/{{ r.id }}" onsubmit="return confirm('¿Seguro que deseas eliminar este inscrito?');">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+<script id="data-json" type="application/json">
+    {{ {"labels": grafico_labels, "valores": grafico_valores} | tojson }}
+</script>
+
+<script>
+    let data = JSON.parse(document.getElementById('data-json').textContent);
+
+    if (data.labels.length === 1) {
+        data.labels.push(" ");
+        data.valores.push(0);
+    }
+
+    const ctx = document.getElementById('graficoCursos').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Inscritos',
+                data: data.valores,
+                backgroundColor: '#00ff88',
+                borderRadius: 8,
+                barPercentage: 0.4,
+                categoryPercentage: 0.5,
+                maxBarThickness: 60
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: 'white'
+                    },
+                    grid: {
+                        color: 'rgba(255,255,255,0.1)'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: 'white',
+                        stepSize: 1
+                    },
+                    grid: {
+                        color: 'rgba(255,255,255,0.1)'
+                    }
+                }
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

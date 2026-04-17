@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, s
 import csv
 import os
 from datetime import datetime
+from openpyxl import Workbook
 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_femp_2026'
@@ -101,12 +102,11 @@ def inscritos():
     cursos_resumen = {}
     for r in registros:
         curso = r['curso']
-        if curso in cursos_resumen:
-            cursos_resumen[curso] += 1
-        else:
-            cursos_resumen[curso] = 1
+        cursos_resumen[curso] = cursos_resumen.get(curso, 0) + 1
 
     ultimo_inscrito = registros[-1] if registros else None
+    grafico_labels = list(cursos_resumen.keys())
+    grafico_valores = list(cursos_resumen.values())
 
     return render_template(
         'inscritos.html',
@@ -114,7 +114,9 @@ def inscritos():
         busqueda=busqueda,
         total_inscritos=total_inscritos,
         cursos_resumen=cursos_resumen,
-        ultimo_inscrito=ultimo_inscrito
+        ultimo_inscrito=ultimo_inscrito,
+        grafico_labels=grafico_labels,
+        grafico_valores=grafico_valores
     )
 
 
@@ -133,6 +135,50 @@ def descargar_inscritos():
         )
 
     return redirect(url_for('inscritos'))
+
+
+@app.route('/descargar-excel')
+def descargar_excel():
+    if not session.get('logueado'):
+        return redirect(url_for('login'))
+
+    archivo_csv = 'inscripciones.csv'
+    archivo_excel = 'inscritos.xlsx'
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Inscritos"
+
+    encabezados = ['Nombre', 'Correo', 'Curso', 'Fecha']
+    ws.append(encabezados)
+
+    if os.path.isfile(archivo_csv):
+        with open(archivo_csv, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            next(reader, None)
+
+            for fila in reader:
+                if len(fila) == 4:
+                    ws.append(fila)
+
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            try:
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+            except:
+                pass
+        ws.column_dimensions[column].width = max_length + 4
+
+    wb.save(archivo_excel)
+
+    return send_file(
+        archivo_excel,
+        as_attachment=True,
+        download_name='inscritos.xlsx'
+    )
 
 
 @app.route('/eliminar-inscrito/<int:registro_id>', methods=['POST'])
@@ -157,12 +203,7 @@ def eliminar_inscrito(registro_id):
 
         with open(archivo, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-
-            if encabezado:
-                writer.writerow(encabezado)
-            else:
-                writer.writerow(['Nombre', 'Correo', 'Curso', 'Fecha'])
-
+            writer.writerow(encabezado if encabezado else ['Nombre', 'Correo', 'Curso', 'Fecha'])
             writer.writerows(filas)
 
     return redirect(url_for('inscritos'))
