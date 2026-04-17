@@ -126,6 +126,17 @@
             background: #d93636;
         }
 
+        .btn-edit {
+            background: #1e90ff;
+            color: white;
+            padding: 10px 14px;
+            margin-right: 8px;
+        }
+
+        .btn-edit:hover {
+            background: #1877d9;
+        }
+
         .contador {
             margin: 20px 0;
             text-align: center;
@@ -154,7 +165,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 820px;
+            min-width: 900px;
         }
 
         th, td {
@@ -187,6 +198,12 @@
             color: #00ff88;
             text-decoration: none;
             font-weight: bold;
+        }
+
+        .acciones-fila {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         .form-eliminar {
@@ -253,7 +270,7 @@
                         <th>Nombre</th>
                         <th>Correo</th>
                         <th>Curso</th>
-                        <th>Acción</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -264,9 +281,13 @@
                         <td>{{ r.correo }}</td>
                         <td>{{ r.curso }}</td>
                         <td>
-                            <form method="POST" action="/eliminar-inscrito/{{ r.id }}" class="form-eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar este inscrito?');">
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
-                            </form>
+                            <div class="acciones-fila">
+                                <a href="/editar-inscrito/{{ r.id }}" class="btn btn-edit">Editar</a>
+
+                                <form method="POST" action="/eliminar-inscrito/{{ r.id }}" class="form-eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar este inscrito?');">
+                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}

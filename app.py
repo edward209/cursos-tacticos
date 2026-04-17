@@ -150,5 +150,53 @@ def eliminar_inscrito(registro_id):
     return redirect(url_for('inscritos'))
 
 
+@app.route('/editar-inscrito/<int:registro_id>', methods=['GET', 'POST'])
+def editar_inscrito(registro_id):
+    if not session.get('logueado'):
+        return redirect(url_for('login'))
+
+    archivo = 'inscripciones.csv'
+    filas = []
+    encabezado = ['Nombre', 'Correo', 'Curso']
+
+    if os.path.isfile(archivo):
+        with open(archivo, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            encabezado_archivo = next(reader, None)
+
+            if encabezado_archivo:
+                encabezado = encabezado_archivo
+
+            for fila in reader:
+                if len(fila) == 3:
+                    filas.append(fila)
+
+    if not (0 <= registro_id < len(filas)):
+        return redirect(url_for('inscritos'))
+
+    if request.method == 'POST':
+        nuevo_nombre = request.form['nombre']
+        nuevo_correo = request.form['correo']
+        nuevo_curso = request.form['curso']
+
+        filas[registro_id] = [nuevo_nombre, nuevo_correo, nuevo_curso]
+
+        with open(archivo, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow(encabezado)
+            writer.writerows(filas)
+
+        return redirect(url_for('inscritos'))
+
+    registro = {
+        'id': registro_id,
+        'nombre': filas[registro_id][0],
+        'correo': filas[registro_id][1],
+        'curso': filas[registro_id][2]
+    }
+
+    return render_template('editar.html', registro=registro)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
