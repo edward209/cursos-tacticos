@@ -1,37 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Inscripción</title>
+    <title>Inscripción | F.E.M.P.</title>
     <style>
         body {
-            background-color: #0d0d0d;
-            color: #00ff88;
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif;
+            background:
+                linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.92)),
+                url("{{ url_for('static', filename='portada.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+        }
+
+        .contenedor {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
         }
 
         .formulario {
-            width: 400px;
-            margin: 80px auto;
-            background-color: #111111;
-            padding: 30px;
+            width: 100%;
+            max-width: 480px;
+            background-color: rgba(0,0,0,0.8);
             border: 1px solid #00ff88;
-            border-radius: 10px;
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
             text-align: center;
         }
 
+        .logo {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 3px solid #00ff88;
+            object-fit: cover;
+            background: white;
+            margin-bottom: 18px;
+        }
+
         h1 {
-            margin-bottom: 30px;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #d5d5d5;
+            margin-bottom: 25px;
         }
 
         input, select {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
+            padding: 14px;
+            margin-bottom: 16px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 16px;
+            box-sizing: border-box;
         }
 
         button {
@@ -39,7 +69,7 @@
             padding: 14px;
             background-color: #00ff88;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
@@ -48,26 +78,47 @@
         button:hover {
             background-color: #00cc6a;
         }
+
+        .volver {
+            margin-top: 18px;
+        }
+
+        .volver a {
+            color: #00ff88;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
 
-    <div class="formulario">
-        <h1>Formulario de Inscripción</h1>
+    <div class="contenedor">
+        <div class="formulario">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
+            <h1>Formulario de Inscripción</h1>
+            <p>Completa tus datos para reservar tu cupo</p>
 
-       <form method="POST">
-    <input type="text" name="nombre" placeholder="Nombre completo" required>
-    <input type="email" name="correo" placeholder="Correo electrónico" required>
+            <form method="POST">
+                <input type="text" name="nombre" placeholder="Nombre completo" required>
+                <input type="email" name="correo" placeholder="Correo electrónico" required>
 
-    <select name="curso" required>
-        <option value="">Selecciona un curso</option>
-        <option>Defensa Personal</option>
-        <option>Supervivencia</option>
-        <option>Tiro Táctico</option>
-    </select>
+                <select name="curso" required>
+                    <option value="">Selecciona un curso</option>
+                    <option>Defensa Personal</option>
+                    <option>Supervivencia</option>
+                    <option>Tiro Táctico</option>
+                    <option>Primer Respondiente</option>
+                    <option>Medicina Táctica</option>
+                    <option>Rescate y Evacuación</option>
+                </select>
 
-    <button type="submit">Enviar inscripción</button>
-</form>
+                <button type="submit">Enviar inscripción</button>
+            </form>
+
+            <div class="volver">
+                <a href="/">← Volver al inicio</a>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

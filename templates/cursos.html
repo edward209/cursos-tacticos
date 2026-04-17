@@ -1,39 +1,147 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cursos Tácticos</title>
+    <title>Cursos | F.E.M.P.</title>
     <style>
         body {
-            background-color: #0d0d0d;
-            color: #00ff88;
-            font-family: Arial;
-            text-align: center;
-            padding-top: 50px;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+            background:
+                linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.9)),
+                url("{{ url_for('static', filename='portada.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
+
+        .header {
+            text-align: center;
+            padding: 50px 20px 20px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #00ff88;
+            object-fit: cover;
+            background: white;
+        }
+
+        h1 {
+            color: #00ff88;
+            font-size: 52px;
+            margin: 20px 0 10px;
+        }
+
+        .subtitulo {
+            color: #d6d6d6;
+            font-size: 20px;
+        }
+
+        .contenedor {
+            max-width: 1200px;
+            margin: 40px auto 80px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
         .curso {
+            background-color: rgba(0,0,0,0.78);
             border: 1px solid #00ff88;
-            margin: 20px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }
+
+        .curso h2 {
+            color: #00ff88;
+            margin-top: 0;
+        }
+
+        .curso p {
+            color: #d0d0d0;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 14px 28px;
+            background-color: #00ff88;
+            color: black;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 6px;
+        }
+
+        .btn:hover {
+            background-color: #00cc6a;
+        }
+
+        .volver {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .volver a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <h1>CURSOS DISPONIBLES</h1>
-
-    <div class="curso">
-        <h2>Defensa Personal</h2>
-        <p>Aprende técnicas reales de combate cuerpo a cuerpo.</p>
+    <div class="header">
+        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
+        <h1>Nuestros Cursos</h1>
+        <p class="subtitulo">Formación táctica, operativa y de respuesta</p>
     </div>
 
-    <div class="curso">
-        <h2>Supervivencia</h2>
-        <p>Domina habilidades para sobrevivir en cualquier entorno.</p>
+    <div class="contenedor">
+        <div class="curso">
+            <h2>Defensa Personal</h2>
+            <p>Entrenamiento orientado a técnicas reales de protección, reacción y control en escenarios de riesgo.</p>
+            <a href="/inscripcion" class="btn">Inscribirme</a>
+        </div>
+
+        <div class="curso">
+            <h2>Supervivencia</h2>
+            <p>Aprende habilidades esenciales de adaptación, orientación, resistencia y manejo en entornos hostiles.</p>
+            <a href="/inscripcion" class="btn">Inscribirme</a>
+        </div>
+
+        <div class="curso">
+            <h2>Tiro Táctico</h2>
+            <p>Capacitación enfocada en precisión, reacción, disciplina operativa y control bajo presión.</p>
+            <a href="/inscripcion" class="btn">Inscribirme</a>
+        </div>
+
+        <div class="curso">
+            <h2>Primer Respondiente</h2>
+            <p>Procedimientos iniciales de atención, evaluación rápida y estabilización en situaciones de emergencia.</p>
+            <a href="/inscripcion" class="btn">Inscribirme</a>
+        </div>
+
+        <div class="curso">
+            <h2>Medicina Táctica</h2>
+            <p>Atención prehospitalaria aplicada a escenarios operativos, control de hemorragias y respuesta inmediata.</p>
+            <a href="/inscripcion" class="btn">Inscribirme</a>
+        </div>
+
+        <div class="curso">
+            <h2>Rescate y Evacuación</h2>
+            <p>Técnicas de extracción, movilización y evacuación segura en incidentes complejos y de alto riesgo.</p>
+            <a href="/inscripcion" class="btn">Inscribirme</a>
+        </div>
     </div>
 
-    <div class="curso">
-        <h2>Tiro Táctico</h2>
-        <p>Entrenamiento avanzado con armas.</p>
+    <div class="volver">
+        <a href="/">← Volver al inicio</a>
     </div>
 
 </body>
