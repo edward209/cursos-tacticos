@@ -4,14 +4,17 @@ import os
 
 app = Flask(__name__)
 
+# Página principal
 @app.route('/')
 def inicio():
     return render_template('index.html')
 
+# Página de cursos
 @app.route('/cursos')
 def cursos():
     return render_template('cursos.html')
 
+# Página de inscripción
 @app.route('/inscripcion', methods=['GET', 'POST'])
 def inscripcion():
     if request.method == 'POST':
