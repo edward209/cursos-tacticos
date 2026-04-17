@@ -2,56 +2,265 @@
 <html>
 <head>
     <title>Panel de Inscritos</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            background: black;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background:
+                linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.92)),
+                url("{{ url_for('static', filename='portada.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: white;
-            font-family: Arial;
+        }
+
+        .topbar {
+            background: rgba(0,0,0,0.9);
+            border-bottom: 1px solid #00ff88;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .topbar .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #00ff88;
+            background: white;
+        }
+
+        .topbar a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .contenedor {
+            max-width: 1150px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
             text-align: center;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        .sub {
+            text-align: center;
+            color: #d0d0d0;
+            margin-bottom: 30px;
+        }
+
+        .acciones {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .buscador-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .buscador-form input {
+            padding: 12px 14px;
+            min-width: 260px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            background: #00ff88;
+            color: black;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #00cc6a;
+        }
+
+        .btn-sec {
+            background: transparent;
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+
+        .btn-sec:hover {
+            background: #00ff88;
+            color: black;
+        }
+
+        .contador {
+            margin: 20px 0;
+            text-align: center;
+            font-size: 18px;
+            color: #ffffff;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #00ff88;
+            color: black;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+
+        .tabla-box {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            overflow-x: auto;
+            padding: 15px;
         }
 
         table {
-            width: 80%;
-            margin: 30px auto;
+            width: 100%;
             border-collapse: collapse;
+            min-width: 700px;
         }
 
         th, td {
-            border: 1px solid #00ff88;
-            padding: 10px;
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0,255,136,0.25);
         }
 
         th {
             color: #00ff88;
+            background: rgba(0,255,136,0.08);
+        }
+
+        tr:hover {
+            background: rgba(0,255,136,0.05);
+        }
+
+        .vacio {
+            text-align: center;
+            color: #d0d0d0;
+            padding: 30px 0;
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .footer-link a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .acciones {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .buscador-form {
+                width: 100%;
+            }
+
+            .buscador-form input {
+                min-width: 100%;
+            }
         }
     </style>
 </head>
-
 <body>
 
-<h1>INSCRITOS</h1>
+    <div class="topbar">
+        <div class="logo-area">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+            <strong>F.E.M.P. - Panel de Inscritos</strong>
+        </div>
 
-<table>
-    <tr>
-        <th>#</th>
-        <th>Nombre</th>
-        <th>Correo</th>
-        <th>Curso</th>
-    </tr>
+        <div>
+            <a href="/">Inicio</a>
+            <a href="/cursos">Cursos</a>
+            <a href="/inscripcion">Inscripción</a>
+            <a href="/logout">Cerrar sesión</a>
+        </div>
+    </div>
 
-    {% for r in registros %}
-    <tr>
-        <td>{{ loop.index }}</td>
-        <td>{{ r.nombre }}</td>
-        <td>{{ r.correo }}</td>
-        <td>{{ r.curso }}</td>
-    </tr>
-    {% endfor %}
+    <div class="contenedor">
+        <h1>Panel de Inscritos</h1>
+        <p class="sub">Listado de personas registradas en los cursos</p>
 
-</table>
+        <div class="acciones">
+            <form method="GET" action="/inscritos" class="buscador-form">
+                <input type="text" name="q" placeholder="Buscar por nombre, correo o curso" value="{{ busqueda }}">
+                <button type="submit" class="btn">Buscar</button>
+                <a href="/inscritos" class="btn btn-sec">Limpiar</a>
+            </form>
 
-<a href="/">Volver</a>
+            <a href="/descargar-inscritos" class="btn">Descargar CSV</a>
+        </div>
+
+        <div class="contador">
+            Resultados encontrados:
+            <span class="badge">{{ registros|length }}</span>
+        </div>
+
+        <div class="tabla-box">
+            {% if registros %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Curso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in registros %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ r.nombre }}</td>
+                        <td>{{ r.correo }}</td>
+                        <td>{{ r.curso }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="vacio">No se encontraron registros.</div>
+            {% endif %}
+        </div>
+
+        <div class="footer-link">
+            <a href="/">← Volver al inicio</a>
+        </div>
+    </div>
 
 </body>
 </html>
