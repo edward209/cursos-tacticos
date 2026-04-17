@@ -66,6 +66,47 @@
             margin-bottom: 30px;
         }
 
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(0,0,0,0.82);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .stat-card h3 {
+            margin-top: 0;
+            color: #00ff88;
+            font-size: 20px;
+        }
+
+        .stat-num {
+            font-size: 34px;
+            font-weight: bold;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .stat-text {
+            color: #d0d0d0;
+            line-height: 1.6;
+        }
+
+        .curso-linea {
+            margin-bottom: 10px;
+            color: #d0d0d0;
+        }
+
+        .curso-linea strong {
+            color: #00ff88;
+        }
+
         .acciones {
             display: flex;
             justify-content: space-between;
@@ -244,7 +285,42 @@
 
     <div class="contenedor">
         <h1>Panel de Inscritos</h1>
-        <p class="sub">Listado de personas registradas en los cursos</p>
+        <p class="sub">Listado y resumen de personas registradas en los cursos</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total de inscritos</h3>
+                <div class="stat-num">{{ total_inscritos }}</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Inscritos por curso</h3>
+                <div class="stat-text">
+                    {% if cursos_resumen %}
+                        {% for curso, cantidad in cursos_resumen.items() %}
+                            <div class="curso-linea">
+                                <strong>{{ curso }}</strong>: {{ cantidad }}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        No hay datos todavía.
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Último inscrito</h3>
+                <div class="stat-text">
+                    {% if ultimo_inscrito %}
+                        <strong>{{ ultimo_inscrito.nombre }}</strong><br>
+                        {{ ultimo_inscrito.curso }}<br>
+                        {{ ultimo_inscrito.fecha }}
+                    {% else %}
+                        Sin registros todavía.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
         <div class="acciones">
             <form method="GET" action="/inscritos" class="buscador-form">

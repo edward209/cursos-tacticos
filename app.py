@@ -96,10 +96,25 @@ def inscritos():
                     if not busqueda or busqueda in texto:
                         registros.append(registro)
 
+    total_inscritos = len(registros)
+
+    cursos_resumen = {}
+    for r in registros:
+        curso = r['curso']
+        if curso in cursos_resumen:
+            cursos_resumen[curso] += 1
+        else:
+            cursos_resumen[curso] = 1
+
+    ultimo_inscrito = registros[-1] if registros else None
+
     return render_template(
         'inscritos.html',
         registros=registros,
-        busqueda=busqueda
+        busqueda=busqueda,
+        total_inscritos=total_inscritos,
+        cursos_resumen=cursos_resumen,
+        ultimo_inscrito=ultimo_inscrito
     )
 
 
