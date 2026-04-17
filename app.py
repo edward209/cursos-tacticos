@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
 import csv
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_femp_2026'
@@ -25,6 +26,7 @@ def inscripcion():
         nombre = request.form['nombre']
         correo = request.form['correo']
         curso = request.form['curso']
+        fecha = datetime.now().strftime('%d/%m/%Y %H:%M')
 
         archivo = 'inscripciones.csv'
         existe = os.path.isfile(archivo)
@@ -33,9 +35,9 @@ def inscripcion():
             writer = csv.writer(f)
 
             if not existe:
-                writer.writerow(['Nombre', 'Correo', 'Curso'])
+                writer.writerow(['Nombre', 'Correo', 'Curso', 'Fecha'])
 
-            writer.writerow([nombre, correo, curso])
+            writer.writerow([nombre, correo, curso, fecha])
 
         return render_template('gracias.html', nombre=nombre)
 
@@ -80,15 +82,16 @@ def inscritos():
             next(reader, None)
 
             for i, fila in enumerate(reader):
-                if len(fila) == 3:
+                if len(fila) == 4:
                     registro = {
                         'id': i,
                         'nombre': fila[0],
                         'correo': fila[1],
-                        'curso': fila[2]
+                        'curso': fila[2],
+                        'fecha': fila[3]
                     }
 
-                    texto = f"{fila[0]} {fila[1]} {fila[2]}".lower()
+                    texto = f"{fila[0]} {fila[1]} {fila[2]} {fila[3]}".lower()
 
                     if not busqueda or busqueda in texto:
                         registros.append(registro)
@@ -131,7 +134,7 @@ def eliminar_inscrito(registro_id):
             encabezado = next(reader, None)
 
             for fila in reader:
-                if len(fila) == 3:
+                if len(fila) == 4:
                     filas.append(fila)
 
         if 0 <= registro_id < len(filas):
@@ -143,7 +146,7 @@ def eliminar_inscrito(registro_id):
             if encabezado:
                 writer.writerow(encabezado)
             else:
-                writer.writerow(['Nombre', 'Correo', 'Curso'])
+                writer.writerow(['Nombre', 'Correo', 'Curso', 'Fecha'])
 
             writer.writerows(filas)
 
@@ -157,7 +160,7 @@ def editar_inscrito(registro_id):
 
     archivo = 'inscripciones.csv'
     filas = []
-    encabezado = ['Nombre', 'Correo', 'Curso']
+    encabezado = ['Nombre', 'Correo', 'Curso', 'Fecha']
 
     if os.path.isfile(archivo):
         with open(archivo, 'r', encoding='utf-8') as f:
@@ -168,7 +171,7 @@ def editar_inscrito(registro_id):
                 encabezado = encabezado_archivo
 
             for fila in reader:
-                if len(fila) == 3:
+                if len(fila) == 4:
                     filas.append(fila)
 
     if not (0 <= registro_id < len(filas)):
@@ -178,8 +181,9 @@ def editar_inscrito(registro_id):
         nuevo_nombre = request.form['nombre']
         nuevo_correo = request.form['correo']
         nuevo_curso = request.form['curso']
+        fecha_original = filas[registro_id][3]
 
-        filas[registro_id] = [nuevo_nombre, nuevo_correo, nuevo_curso]
+        filas[registro_id] = [nuevo_nombre, nuevo_correo, nuevo_curso, fecha_original]
 
         with open(archivo, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
@@ -192,7 +196,8 @@ def editar_inscrito(registro_id):
         'id': registro_id,
         'nombre': filas[registro_id][0],
         'correo': filas[registro_id][1],
-        'curso': filas[registro_id][2]
+        'curso': filas[registro_id][2],
+        'fecha': filas[registro_id][3]
     }
 
     return render_template('editar.html', registro=registro)

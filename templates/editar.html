@@ -54,6 +54,12 @@
             margin-bottom: 25px;
         }
 
+        .fecha {
+            color: #00ff88;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
         input, select {
             width: 100%;
             padding: 14px;
@@ -97,6 +103,8 @@
             <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
             <h1>Editar inscrito</h1>
             <p>Modifica la información del registro</p>
+
+            <div class="fecha">Fecha de inscripción: {{ registro.fecha }}</div>
 
             <form method="POST">
                 <input type="text" name="nombre" value="{{ registro.nombre }}" placeholder="Nombre completo" required>

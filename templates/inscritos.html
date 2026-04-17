@@ -49,7 +49,7 @@
         }
 
         .contenedor {
-            max-width: 1150px;
+            max-width: 1250px;
             margin: 40px auto;
             padding: 20px;
         }
@@ -165,7 +165,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 900px;
+            min-width: 1050px;
         }
 
         th, td {
@@ -248,7 +248,7 @@
 
         <div class="acciones">
             <form method="GET" action="/inscritos" class="buscador-form">
-                <input type="text" name="q" placeholder="Buscar por nombre, correo o curso" value="{{ busqueda }}">
+                <input type="text" name="q" placeholder="Buscar por nombre, correo, curso o fecha" value="{{ busqueda }}">
                 <button type="submit" class="btn">Buscar</button>
                 <a href="/inscritos" class="btn btn-sec">Limpiar</a>
             </form>
@@ -270,6 +270,7 @@
                         <th>Nombre</th>
                         <th>Correo</th>
                         <th>Curso</th>
+                        <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -280,6 +281,7 @@
                         <td>{{ r.nombre }}</td>
                         <td>{{ r.correo }}</td>
                         <td>{{ r.curso }}</td>
+                        <td>{{ r.fecha }}</td>
                         <td>
                             <div class="acciones-fila">
                                 <a href="/editar-inscrito/{{ r.id }}" class="btn btn-edit">Editar</a>
