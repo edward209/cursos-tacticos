@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login Panel</title>
+    <title>Acceso al panel</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
+        * { box-sizing: border-box; }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             background:
-                linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.92)),
+                linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.92)),
                 url("{{ url_for('static', filename='portada.jpg') }}");
             background-size: cover;
             background-position: center;
@@ -24,65 +27,69 @@
             padding: 20px;
         }
 
-        .login-box {
+        .box {
             width: 100%;
-            max-width: 420px;
-            background: rgba(0,0,0,0.82);
-            border: 1px solid #00ff88;
-            border-radius: 12px;
-            padding: 35px;
+            max-width: 430px;
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 18px;
+            padding: 34px;
             text-align: center;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
         }
 
         .logo {
             width: 110px;
             height: 110px;
             border-radius: 50%;
-            object-fit: cover;
             border: 3px solid #00ff88;
+            object-fit: cover;
             background: white;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         h1 {
             color: #00ff88;
+            margin-top: 0;
             margin-bottom: 10px;
         }
 
         p {
             color: #d0d0d0;
-            margin-bottom: 25px;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        .error {
+            color: #ff6666;
+            font-weight: bold;
+            margin-bottom: 15px;
         }
 
         input {
             width: 100%;
-            padding: 14px;
+            padding: 14px 15px;
             margin-bottom: 15px;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 16px;
-            box-sizing: border-box;
         }
 
         button {
             width: 100%;
-            padding: 14px;
+            padding: 14px 18px;
             background: #00ff88;
+            color: black;
             border: none;
-            border-radius: 6px;
-            font-size: 18px;
+            border-radius: 10px;
+            font-size: 17px;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.3s;
         }
 
         button:hover {
             background: #00cc6a;
-        }
-
-        .error {
-            color: #ff6b6b;
-            margin-bottom: 15px;
-            font-weight: bold;
         }
 
         .volver {
@@ -99,10 +106,10 @@
 <body>
 
     <div class="contenedor">
-        <div class="login-box">
+        <div class="box">
             <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
-            <h1>Acceso al Panel</h1>
-            <p>Ingresa tus credenciales para ver los inscritos</p>
+            <h1>Acceso al panel</h1>
+            <p>Ingresa tus credenciales para administrar los inscritos.</p>
 
             {% if error %}
                 <div class="error">{{ error }}</div>

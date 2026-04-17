@@ -3,14 +3,19 @@
 <head>
     <title>Panel de Inscritos</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             background:
-                linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.92)),
+                linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.92)),
                 url("{{ url_for('static', filename='portada.jpg') }}");
             background-size: cover;
             background-position: center;
@@ -18,63 +23,155 @@
             color: white;
         }
 
+        .topbar {
+            background: rgba(0,0,0,0.92);
+            border-bottom: 1px solid #00ff88;
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 2px solid #00ff88;
+            object-fit: cover;
+            background: white;
+        }
+
+        .topbar h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #00ff88;
+        }
+
+        .topbar-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .topbar-links a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 14px;
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+            transition: 0.3s;
+        }
+
+        .topbar-links a:hover {
+            background: #00ff88;
+            color: black;
+        }
+
         .contenedor {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 40px auto;
             padding: 20px;
         }
 
-        h1 {
+        .titulo {
             text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .titulo h1 {
+            margin: 0 0 10px 0;
             color: #00ff88;
+            font-size: 42px;
+        }
+
+        .titulo p {
+            margin: 0;
+            color: #d0d0d0;
+            font-size: 18px;
         }
 
         .stats {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
 
         .card {
-            flex: 1;
-            min-width: 250px;
-            background: rgba(0,0,0,0.8);
-            border: 1px solid #00ff88;
-            padding: 20px;
-            border-radius: 10px;
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.45);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
         }
 
-        .grafico {
-            background: rgba(0,0,0,0.8);
-            border: 1px solid #00ff88;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            height: 300px;
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 14px;
+            color: #00ff88;
+            font-size: 22px;
+        }
+
+        .numero-principal {
+            font-size: 46px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .card p {
+            color: #d8d8d8;
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .resumen-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .resumen-item:last-child {
+            border-bottom: none;
         }
 
         .acciones {
-            margin-bottom: 20px;
+            margin-top: 10px;
+            margin-bottom: 28px;
             display: flex;
-            gap: 10px;
+            gap: 14px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn {
-            padding: 10px 16px;
+            display: inline-block;
+            padding: 12px 18px;
             background: #00ff88;
             color: black;
             text-decoration: none;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 15px;
+            transition: 0.3s;
         }
 
-        .btn-danger {
-            background: red;
-            color: white;
+        .btn:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
         }
 
         .btn-edit {
@@ -82,162 +179,326 @@
             color: white;
         }
 
+        .btn-edit:hover {
+            background: #1877d9;
+        }
+
+        .btn-danger {
+            background: #ff3b3b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d62c2c;
+        }
+
+        .grafico {
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.45);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+        }
+
+        .grafico h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #00ff88;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .chart-wrap {
+            position: relative;
+            height: 340px;
+            width: 100%;
+        }
+
+        .tabla-box {
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.45);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+        }
+
+        .tabla-scroll {
+            overflow-x: auto;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            background: rgba(0,0,0,0.8);
-            border: 1px solid #00ff88;
+            min-width: 1000px;
         }
 
         th, td {
-            padding: 10px;
-            border-bottom: 1px solid #00ff88;
+            padding: 16px 14px;
+            border-bottom: 1px solid rgba(0,255,136,0.16);
             text-align: left;
         }
 
         th {
             color: #00ff88;
+            background: rgba(0,255,136,0.07);
+            font-size: 16px;
         }
 
-        form {
-            display: inline;
+        td {
+            color: #f0f0f0;
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .acciones-fila {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .form-eliminar {
+            margin: 0;
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 26px;
+        }
+
+        .footer-link a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .footer-link a:hover {
+            text-decoration: underline;
+        }
+
+        .sin-datos {
+            text-align: center;
+            padding: 25px;
+            color: #d0d0d0;
+        }
+
+        @media (max-width: 768px) {
+            .topbar {
+                gap: 15px;
+                justify-content: center;
+            }
+
+            .topbar-left {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .topbar-links {
+                justify-content: center;
+            }
+
+            .titulo h1 {
+                font-size: 34px;
+            }
+
+            .titulo p {
+                font-size: 16px;
+            }
+
+            .acciones {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="contenedor">
-
-    <h1>Panel de Inscritos</h1>
-
-    <div class="stats">
-        <div class="card">
-            <h3>Total inscritos</h3>
-            <h2>{{ total_inscritos }}</h2>
+    <div class="topbar">
+        <div class="topbar-left">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+            <h2>F.E.M.P. - Panel Premium</h2>
         </div>
 
-        <div class="card">
-            <h3>Por curso</h3>
-            {% for curso, cantidad in cursos_resumen.items() %}
-                <p>{{ curso }}: {{ cantidad }}</p>
-            {% endfor %}
-        </div>
-
-        <div class="card">
-            <h3>Último inscrito</h3>
-            {% if ultimo_inscrito %}
-                <p>{{ ultimo_inscrito.nombre }}</p>
-                <p>{{ ultimo_inscrito.curso }}</p>
-                <p>{{ ultimo_inscrito.fecha }}</p>
-            {% else %}
-                <p>Sin datos</p>
-            {% endif %}
+        <div class="topbar-links">
+            <a href="/">Inicio</a>
+            <a href="/cursos">Cursos</a>
+            <a href="/inscripcion">Inscripción</a>
+            <a href="/logout">Cerrar sesión</a>
         </div>
     </div>
 
-    <div class="grafico">
-        <h3>Inscritos por curso</h3>
-        <canvas id="graficoCursos"></canvas>
+    <div class="contenedor">
+
+        <div class="titulo">
+            <h1>Panel de Inscritos</h1>
+            <p>Resumen, visualización y gestión de registros</p>
+        </div>
+
+        <div class="stats">
+            <div class="card">
+                <h3>Total inscritos</h3>
+                <div class="numero-principal">{{ total_inscritos }}</div>
+            </div>
+
+            <div class="card">
+                <h3>Inscritos por curso</h3>
+                {% if cursos_resumen %}
+                    {% for curso, cantidad in cursos_resumen.items() %}
+                        <div class="resumen-item">
+                            <strong>{{ curso }}</strong>: {{ cantidad }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Sin datos disponibles.</p>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <h3>Último inscrito</h3>
+                {% if ultimo_inscrito %}
+                    <p><strong>Nombre:</strong> {{ ultimo_inscrito.nombre }}</p>
+                    <p><strong>Curso:</strong> {{ ultimo_inscrito.curso }}</p>
+                    <p><strong>Fecha:</strong> {{ ultimo_inscrito.fecha }}</p>
+                {% else %}
+                    <p>Sin registros.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grafico">
+            <h3>Inscritos por curso</h3>
+            <div class="chart-wrap">
+                <canvas id="graficoCursos"></canvas>
+            </div>
+        </div>
+
+        <div class="acciones">
+            <a href="/descargar-inscritos" class="btn">Descargar CSV</a>
+            <a href="/descargar-excel" class="btn">Descargar Excel</a>
+            <a href="/logout" class="btn">Cerrar sesión</a>
+        </div>
+
+        <div class="tabla-box">
+            <div class="tabla-scroll">
+                <table>
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Curso</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+
+                    {% for r in registros %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ r.nombre }}</td>
+                        <td>{{ r.correo }}</td>
+                        <td>{{ r.curso }}</td>
+                        <td>{{ r.fecha }}</td>
+                        <td>
+                            <div class="acciones-fila">
+                                <a href="/editar-inscrito/{{ r.id }}" class="btn btn-edit">Editar</a>
+
+                                <form method="POST" action="/eliminar-inscrito/{{ r.id }}" class="form-eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar este inscrito?');">
+                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="sin-datos">No hay inscritos registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div class="footer-link">
+            <a href="/">← Volver al inicio</a>
+        </div>
+
     </div>
 
-    <div class="acciones">
-        <a href="/descargar-inscritos" class="btn">Descargar CSV</a>
-        <a href="/descargar-excel" class="btn">Descargar Excel</a>
-        <a href="/logout" class="btn">Cerrar sesión</a>
-    </div>
+    <script id="data-json" type="application/json">
+        {{ {"labels": grafico_labels, "valores": grafico_valores} | tojson }}
+    </script>
 
-    <table>
-        <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Curso</th>
-            <th>Fecha</th>
-            <th>Acciones</th>
-        </tr>
+    <script>
+        let data = JSON.parse(document.getElementById('data-json').textContent);
 
-        {% for r in registros %}
-        <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ r.nombre }}</td>
-            <td>{{ r.correo }}</td>
-            <td>{{ r.curso }}</td>
-            <td>{{ r.fecha }}</td>
-            <td>
-                <a href="/editar-inscrito/{{ r.id }}" class="btn btn-edit">Editar</a>
+        if (data.labels.length === 1) {
+            data.labels.push(" ");
+            data.valores.push(0);
+        }
 
-                <form method="POST" action="/eliminar-inscrito/{{ r.id }}" onsubmit="return confirm('¿Seguro que deseas eliminar este inscrito?');">
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+        const ctx = document.getElementById('graficoCursos').getContext('2d');
 
-</div>
-
-<script id="data-json" type="application/json">
-    {{ {"labels": grafico_labels, "valores": grafico_valores} | tojson }}
-</script>
-
-<script>
-    let data = JSON.parse(document.getElementById('data-json').textContent);
-
-    if (data.labels.length === 1) {
-        data.labels.push(" ");
-        data.valores.push(0);
-    }
-
-    const ctx = document.getElementById('graficoCursos').getContext('2d');
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: data.labels,
-            datasets: [{
-                label: 'Inscritos',
-                data: data.valores,
-                backgroundColor: '#00ff88',
-                borderRadius: 8,
-                barPercentage: 0.4,
-                categoryPercentage: 0.5,
-                maxBarThickness: 60
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: 'white'
-                    }
-                }
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Inscritos',
+                    data: data.valores,
+                    backgroundColor: '#00ff88',
+                    borderRadius: 10,
+                    barPercentage: 0.45,
+                    categoryPercentage: 0.55,
+                    maxBarThickness: 70
+                }]
             },
-            scales: {
-                x: {
-                    ticks: {
-                        color: 'white'
-                    },
-                    grid: {
-                        color: 'rgba(255,255,255,0.1)'
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 900
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'white',
+                            font: {
+                                size: 14
+                            }
+                        }
                     }
                 },
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: 'white',
-                        stepSize: 1
+                scales: {
+                    x: {
+                        ticks: {
+                            color: 'white',
+                            font: {
+                                size: 14
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255,255,255,0.08)'
+                        }
                     },
-                    grid: {
-                        color: 'rgba(255,255,255,0.1)'
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: 'white',
+                            stepSize: 1,
+                            font: {
+                                size: 14
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255,255,255,0.08)'
+                        }
                     }
                 }
             }
-        }
-    });
-</script>
+        });
+    </script>
 
 </body>
 </html>

@@ -1,25 +1,185 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Inscripción</title>
+    <title>Inscripción | F.E.M.P.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background:
+                linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.92)),
+                url("{{ url_for('static', filename='portada.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+        }
+
+        .topbar {
+            background: rgba(0,0,0,0.92);
+            border-bottom: 1px solid rgba(0,255,136,0.35);
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            backdrop-filter: blur(8px);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-left img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 2px solid #00ff88;
+            object-fit: cover;
+            background: white;
+        }
+
+        .topbar-left h2 {
+            margin: 0;
+            color: #00ff88;
+            font-size: 20px;
+        }
+
+        .topbar-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .topbar-links a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 14px;
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+            transition: 0.3s;
+        }
+
+        .topbar-links a:hover {
+            background: #00ff88;
+            color: black;
+        }
+
+        .contenedor {
+            min-height: calc(100vh - 86px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        .form-box {
+            width: 100%;
+            max-width: 520px;
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+            text-align: center;
+        }
+
+        .logo {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 3px solid #00ff88;
+            object-fit: cover;
+            background: white;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            color: #00ff88;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #d0d0d0;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 15px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px 18px;
+            background: #00ff88;
+            color: black;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #00cc6a;
+        }
+    </style>
 </head>
+<body>
 
-<body style="background:black;color:white;text-align:center;">
+    <div class="topbar">
+        <div class="topbar-left">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+            <h2>F.E.M.P.</h2>
+        </div>
 
-<h1>Inscribirse</h1>
+        <div class="topbar-links">
+            <a href="/">Inicio</a>
+            <a href="/cursos">Cursos</a>
+            <a href="/inscripcion">Inscripción</a>
+        </div>
+    </div>
 
-<form method="POST">
-<input name="nombre" placeholder="Nombre"><br><br>
-<input name="correo" placeholder="Correo"><br><br>
+    <div class="contenedor">
+        <div class="form-box">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
+            <h1>Formulario de inscripción</h1>
+            <p>Completa tus datos para reservar tu cupo en el curso.</p>
 
-<select name="curso">
-<option>Defensa Personal</option>
-<option>Supervivencia</option>
-<option>Tiro Táctico</option>
-</select><br><br>
+            <form method="POST">
+                <input type="text" name="nombre" placeholder="Nombre completo" required>
+                <input type="email" name="correo" placeholder="Correo electrónico" required>
 
-<button>Enviar</button>
-</form>
+                <select name="curso" required>
+                    <option value="">Selecciona un curso</option>
+                    <option>Defensa Personal</option>
+                    <option>Supervivencia</option>
+                    <option>Tiro Táctico</option>
+                    <option>Medicina Táctica</option>
+                    <option>Primer Respondiente</option>
+                    <option>Rescate y Evacuación</option>
+                </select>
+
+                <button type="submit">Enviar inscripción</button>
+            </form>
+        </div>
+    </div>
 
 </body>
 </html>

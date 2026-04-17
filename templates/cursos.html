@@ -1,30 +1,240 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Cursos</title>
-<style>
-body {background:black;color:white;text-align:center;}
-.curso {border:1px solid #00ff88;margin:20px;padding:20px;}
-</style>
+    <title>Cursos | F.E.M.P.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+            background:
+                linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.92)),
+                url("{{ url_for('static', filename='portada.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .topbar {
+            background: rgba(0,0,0,0.92);
+            border-bottom: 1px solid rgba(0,255,136,0.35);
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-left img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 2px solid #00ff88;
+            object-fit: cover;
+            background: white;
+        }
+
+        .topbar-left h2 {
+            margin: 0;
+            color: #00ff88;
+            font-size: 20px;
+        }
+
+        .topbar-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .topbar-links a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 14px;
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+            transition: 0.3s;
+        }
+
+        .topbar-links a:hover {
+            background: #00ff88;
+            color: black;
+        }
+
+        .contenedor {
+            max-width: 1280px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .titulo {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .titulo h1 {
+            margin: 0 0 10px 0;
+            color: #00ff88;
+            font-size: 42px;
+        }
+
+        .titulo p {
+            margin: 0;
+            color: #d0d0d0;
+            font-size: 18px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(0,255,136,0.12);
+            color: #00ff88;
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 13px;
+            margin-bottom: 14px;
+            font-weight: bold;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #00ff88;
+            font-size: 24px;
+        }
+
+        .card p {
+            color: #d8d8d8;
+            line-height: 1.7;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 14px 20px;
+            background: #00ff88;
+            color: black;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .footer-link a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-<h1>CURSOS</h1>
+    <div class="topbar">
+        <div class="topbar-left">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+            <h2>F.E.M.P.</h2>
+        </div>
 
-<div class="curso">
-<h2>Defensa Personal</h2>
-<a href="/inscripcion">Inscribirme</a>
-</div>
+        <div class="topbar-links">
+            <a href="/">Inicio</a>
+            <a href="/cursos">Cursos</a>
+            <a href="/inscripcion">Inscripción</a>
+            <a href="/login">Panel</a>
+        </div>
+    </div>
 
-<div class="curso">
-<h2>Supervivencia</h2>
-<a href="/inscripcion">Inscribirme</a>
-</div>
+    <div class="contenedor">
+        <div class="titulo">
+            <h1>Programas de entrenamiento</h1>
+            <p>Capacitación táctica, operativa y profesional</p>
+        </div>
 
-<div class="curso">
-<h2>Tiro Táctico</h2>
-<a href="/inscripcion">Inscribirme</a>
-</div>
+        <div class="cards">
+            <div class="card">
+                <div class="badge">Operativo</div>
+                <h3>Defensa Personal</h3>
+                <p>Técnicas reales de control, reacción y protección en escenarios de riesgo.</p>
+                <a href="/inscripcion" class="btn">Inscribirme</a>
+            </div>
+
+            <div class="card">
+                <div class="badge">Supervivencia</div>
+                <h3>Supervivencia Extrema</h3>
+                <p>Entrenamiento para resistir, adaptarse y sobrevivir en entornos hostiles.</p>
+                <a href="/inscripcion" class="btn">Inscribirme</a>
+            </div>
+
+            <div class="card">
+                <div class="badge">Avanzado</div>
+                <h3>Tiro Táctico</h3>
+                <p>Precisión, disciplina y respuesta táctica en situaciones exigentes.</p>
+                <a href="/inscripcion" class="btn">Inscribirme</a>
+            </div>
+
+            <div class="card">
+                <div class="badge">Salud</div>
+                <h3>Medicina Táctica</h3>
+                <p>Atención prehospitalaria aplicada a escenarios operativos y de combate.</p>
+                <a href="/inscripcion" class="btn">Inscribirme</a>
+            </div>
+
+            <div class="card">
+                <div class="badge">Emergencias</div>
+                <h3>Primer Respondiente</h3>
+                <p>Protocolos de atención inmediata en situaciones de urgencia y crisis.</p>
+                <a href="/inscripcion" class="btn">Inscribirme</a>
+            </div>
+
+            <div class="card">
+                <div class="badge">Rescate</div>
+                <h3>Rescate y Evacuación</h3>
+                <p>Técnicas de extracción, traslado y evacuación en incidentes complejos.</p>
+                <a href="/inscripcion" class="btn">Inscribirme</a>
+            </div>
+        </div>
+
+        <div class="footer-link">
+            <a href="/">← Volver al inicio</a>
+        </div>
+    </div>
 
 </body>
 </html>

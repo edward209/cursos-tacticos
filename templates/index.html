@@ -5,152 +5,340 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            color: #00ff88;
-            text-align: center;
+            color: white;
             background:
-                linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)),
+                linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.9)),
                 url("{{ url_for('static', filename='portada.jpg') }}");
             background-size: cover;
             background-position: center;
+            background-attachment: fixed;
         }
 
-        .logo {
-            width: 150px;
+        .topbar {
+            background: rgba(0,0,0,0.92);
+            border-bottom: 1px solid rgba(0,255,136,0.35);
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-left img {
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
-            border: 3px solid #00ff88;
-            margin-top: 80px;
+            border: 2px solid #00ff88;
+            object-fit: cover;
             background: white;
         }
 
-        h1 {
-            font-size: 55px;
-            margin-bottom: 10px;
-        }
-
-        p {
-            color: #cccccc;
-            font-size: 18px;
-        }
-
-        button {
-            margin-top: 25px;
-            padding: 15px 40px;
-            background: #00ff88;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: #00cc6a;
-            transform: scale(1.05);
-        }
-
-        .contenedor-cursos {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 40px;
-        }
-
-        .curso {
-            border: 1px solid #00ff88;
-            margin: 15px;
-            padding: 20px;
-            width: 260px;
-            border-radius: 8px;
-            background: rgba(0,0,0,0.7);
-        }
-
-        .curso h3 {
+        .topbar-left h2 {
+            margin: 0;
+            font-size: 20px;
             color: #00ff88;
         }
 
-        .curso p {
-            color: #cccccc;
+        .topbar-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .panel {
-            margin-top: 40px;
-        }
-
-        .panel a {
+        .topbar-links a {
             color: #00ff88;
             text-decoration: none;
             font-weight: bold;
+            padding: 10px 14px;
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+            transition: 0.3s;
         }
 
-        /* BOTÓN WHATSAPP */
-        .whatsapp {
+        .topbar-links a:hover {
+            background: #00ff88;
+            color: black;
+        }
+
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 70px 20px 40px;
+            text-align: center;
+        }
+
+        .hero-logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid #00ff88;
+            object-fit: cover;
+            background: white;
+            box-shadow: 0 0 25px rgba(0,255,136,0.25);
+        }
+
+        .hero h1 {
+            margin: 28px 0 14px;
+            font-size: 58px;
+            color: #00ff88;
+        }
+
+        .hero p {
+            max-width: 850px;
+            margin: 0 auto;
+            color: #d8d8d8;
+            font-size: 20px;
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 22px;
+            background: #00ff88;
+            color: black;
+            text-decoration: none;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #00ff88;
+            border: 1px solid rgba(0,255,136,0.45);
+        }
+
+        .btn-outline:hover {
+            background: #00ff88;
+            color: black;
+        }
+
+        .section {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 30px 20px 70px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 26px;
+        }
+
+        .section-title h2 {
+            color: #00ff88;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .section-title p {
+            color: #d0d0d0;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #00ff88;
+            font-size: 24px;
+        }
+
+        .card p {
+            color: #d8d8d8;
+            line-height: 1.7;
+        }
+
+        .aliados {
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+        }
+
+        .aliados img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(0,255,136,0.35);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 20px 50px;
+            color: #bfbfbf;
+            font-size: 15px;
+        }
+
+        .whatsapp-float {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #25D366;
-            width: 65px;
-            height: 65px;
+            width: 62px;
+            height: 62px;
+            bottom: 25px;
+            right: 25px;
+            background-color: #25D366;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            transition: 0.3s;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+            z-index: 9999;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .whatsapp:hover {
-            transform: scale(1.1);
+        .whatsapp-float:hover {
+            transform: scale(1.08);
         }
 
-        .whatsapp img {
-            width: 32px;
+        .whatsapp-float img {
+            width: 30px;
+            height: 30px;
             filter: invert(1);
         }
 
+        @media (max-width: 768px) {
+            .topbar {
+                justify-content: center;
+                gap: 14px;
+            }
+
+            .topbar-left {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .topbar-links {
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .hero p {
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
-
 <body>
 
-<img src="{{ url_for('static', filename='logo.jpg') }}" class="logo">
+    <div class="topbar">
+        <div class="topbar-left">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+            <h2>F.E.M.P.</h2>
+        </div>
 
-<h1>CURSOS TÁCTICOS</h1>
-<p>Entrenamiento real. Disciplina. Dominio total.</p>
-
-<a href="/cursos">
-    <button>VER CURSOS</button>
-</a>
-
-<div class="contenedor-cursos">
-
-    <div class="curso">
-        <h3>Defensa Personal</h3>
-        <p>Combate cuerpo a cuerpo real para situaciones de riesgo.</p>
+        <div class="topbar-links">
+            <a href="/">Inicio</a>
+            <a href="/cursos">Cursos</a>
+            <a href="/inscripcion">Inscripción</a>
+            <a href="/login">Panel</a>
+        </div>
     </div>
 
-    <div class="curso">
-        <h3>Supervivencia</h3>
-        <p>Aprende técnicas para sobrevivir en cualquier entorno.</p>
+    <section class="hero">
+        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="hero-logo">
+        <h1>CURSOS TÁCTICOS</h1>
+        <p>
+            Formación especializada en medicina táctica, supervivencia, rescate y atención
+            prehospitalaria para personal militar, policial y civil.
+        </p>
+
+        <div class="hero-actions">
+            <a href="/cursos" class="btn">Ver cursos</a>
+            <a href="/inscripcion" class="btn btn-outline">Inscribirme ahora</a>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-title">
+            <h2>Programas destacados</h2>
+            <p>Entrenamiento estructurado, práctico y orientado a resultados reales</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Defensa Personal</h3>
+                <p>Combate cuerpo a cuerpo real para situaciones de riesgo y reacción inmediata.</p>
+            </div>
+
+            <div class="card">
+                <h3>Supervivencia</h3>
+                <p>Aprende técnicas para sobrevivir, adaptarte y responder en cualquier entorno.</p>
+            </div>
+
+            <div class="card">
+                <h3>Tiro Táctico</h3>
+                <p>Entrenamiento avanzado orientado a precisión, reacción y disciplina operativa.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-title">
+            <h2>Aliados educativos</h2>
+            <p>Instituciones y redes que fortalecen nuestra propuesta formativa</p>
+        </div>
+
+        <div class="aliados">
+            <img src="{{ url_for('static', filename='portada.jpg') }}" alt="Aliados educativos">
+        </div>
+    </section>
+
+    <div class="footer">
+        © 2026 F.E.M.P. | Fundación de Enfermeros Militares y Policía
     </div>
 
-    <div class="curso">
-        <h3>Tiro Táctico</h3>
-        <p>Entrenamiento avanzado orientado a precisión y reacción.</p>
-    </div>
-
-</div>
-
-<div class="panel">
-    <a href="/login">🔐 Panel de inscritos</a>
-</div>
-
-<!-- BOTÓN WHATSAPP REAL -->
-<a href="https://wa.me/19736290182" target="_blank" class="whatsapp">
-    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg">
-</a>
+    <a href="https://wa.me/19736290182" class="whatsapp-float" target="_blank" aria-label="WhatsApp">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" alt="WhatsApp">
+    </a>
 
 </body>
 </html>

@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Editar Inscrito</title>
+    <title>Editar inscrito</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
+        * { box-sizing: border-box; }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             background:
-                linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.92)),
+                linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.92)),
                 url("{{ url_for('static', filename='portada.jpg') }}");
             background-size: cover;
             background-position: center;
@@ -26,59 +29,63 @@
 
         .box {
             width: 100%;
-            max-width: 500px;
-            background: rgba(0,0,0,0.82);
-            border: 1px solid #00ff88;
-            border-radius: 12px;
-            padding: 35px;
+            max-width: 520px;
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 18px;
+            padding: 34px;
             text-align: center;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
         }
 
         .logo {
             width: 110px;
             height: 110px;
             border-radius: 50%;
-            object-fit: cover;
             border: 3px solid #00ff88;
+            object-fit: cover;
             background: white;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         h1 {
             color: #00ff88;
+            margin-top: 0;
             margin-bottom: 10px;
         }
 
         p {
             color: #d0d0d0;
-            margin-bottom: 25px;
+            line-height: 1.6;
+            margin-bottom: 15px;
         }
 
         .fecha {
             color: #00ff88;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         input, select {
             width: 100%;
-            padding: 14px;
+            padding: 14px 15px;
             margin-bottom: 15px;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 16px;
-            box-sizing: border-box;
         }
 
         button {
             width: 100%;
-            padding: 14px;
+            padding: 14px 18px;
             background: #00ff88;
+            color: black;
             border: none;
-            border-radius: 6px;
-            font-size: 18px;
+            border-radius: 10px;
+            font-size: 17px;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.3s;
         }
 
         button:hover {
@@ -102,18 +109,20 @@
         <div class="box">
             <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
             <h1>Editar inscrito</h1>
-            <p>Modifica la información del registro</p>
-
+            <p>Actualiza los datos del registro seleccionado.</p>
             <div class="fecha">Fecha de inscripción: {{ registro.fecha }}</div>
 
             <form method="POST">
-                <input type="text" name="nombre" value="{{ registro.nombre }}" placeholder="Nombre completo" required>
-                <input type="email" name="correo" value="{{ registro.correo }}" placeholder="Correo electrónico" required>
+                <input type="text" name="nombre" value="{{ registro.nombre }}" required>
+                <input type="email" name="correo" value="{{ registro.correo }}" required>
 
                 <select name="curso" required>
                     <option value="Defensa Personal" {% if registro.curso == 'Defensa Personal' %}selected{% endif %}>Defensa Personal</option>
                     <option value="Supervivencia" {% if registro.curso == 'Supervivencia' %}selected{% endif %}>Supervivencia</option>
                     <option value="Tiro Táctico" {% if registro.curso == 'Tiro Táctico' %}selected{% endif %}>Tiro Táctico</option>
+                    <option value="Medicina Táctica" {% if registro.curso == 'Medicina Táctica' %}selected{% endif %}>Medicina Táctica</option>
+                    <option value="Primer Respondiente" {% if registro.curso == 'Primer Respondiente' %}selected{% endif %}>Primer Respondiente</option>
+                    <option value="Rescate y Evacuación" {% if registro.curso == 'Rescate y Evacuación' %}selected{% endif %}>Rescate y Evacuación</option>
                 </select>
 
                 <button type="submit">Guardar cambios</button>
