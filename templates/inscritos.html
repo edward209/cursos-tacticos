@@ -116,6 +116,16 @@
             color: black;
         }
 
+        .btn-danger {
+            background: #ff4d4d;
+            color: white;
+            padding: 10px 14px;
+        }
+
+        .btn-danger:hover {
+            background: #d93636;
+        }
+
         .contador {
             margin: 20px 0;
             text-align: center;
@@ -144,7 +154,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 700px;
+            min-width: 820px;
         }
 
         th, td {
@@ -177,6 +187,10 @@
             color: #00ff88;
             text-decoration: none;
             font-weight: bold;
+        }
+
+        .form-eliminar {
+            margin: 0;
         }
 
         @media (max-width: 768px) {
@@ -239,6 +253,7 @@
                         <th>Nombre</th>
                         <th>Correo</th>
                         <th>Curso</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -248,6 +263,11 @@
                         <td>{{ r.nombre }}</td>
                         <td>{{ r.correo }}</td>
                         <td>{{ r.curso }}</td>
+                        <td>
+                            <form method="POST" action="/eliminar-inscrito/{{ r.id }}" class="form-eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar este inscrito?');">
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

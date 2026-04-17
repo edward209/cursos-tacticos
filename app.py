@@ -79,9 +79,10 @@ def inscritos():
             reader = csv.reader(f)
             next(reader, None)
 
-            for fila in reader:
+            for i, fila in enumerate(reader):
                 if len(fila) == 3:
                     registro = {
+                        'id': i,
                         'nombre': fila[0],
                         'correo': fila[1],
                         'curso': fila[2]
@@ -112,6 +113,39 @@ def descargar_inscritos():
             as_attachment=True,
             download_name='inscritos.csv'
         )
+
+    return redirect(url_for('inscritos'))
+
+
+@app.route('/eliminar-inscrito/<int:registro_id>', methods=['POST'])
+def eliminar_inscrito(registro_id):
+    if not session.get('logueado'):
+        return redirect(url_for('login'))
+
+    archivo = 'inscripciones.csv'
+    filas = []
+
+    if os.path.isfile(archivo):
+        with open(archivo, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            encabezado = next(reader, None)
+
+            for fila in reader:
+                if len(fila) == 3:
+                    filas.append(fila)
+
+        if 0 <= registro_id < len(filas):
+            filas.pop(registro_id)
+
+        with open(archivo, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+
+            if encabezado:
+                writer.writerow(encabezado)
+            else:
+                writer.writerow(['Nombre', 'Correo', 'Curso'])
+
+            writer.writerows(filas)
 
     return redirect(url_for('inscritos'))
 
