@@ -1,14 +1,48 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
 import csv
 import os
+import json
 from datetime import datetime
 from openpyxl import Workbook
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_femp_2026'
 
-USUARIO_PANEL = 'admin'
-CLAVE_PANEL = '12345'
+
+def cargar_usuarios():
+    archivo = 'usuarios.json'
+    if os.path.isfile(archivo):
+        with open(archivo, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return []
+
+
+def obtener_usuario(usuario_ingresado):
+    usuarios = cargar_usuarios()
+    for usuario in usuarios:
+        if usuario.get('usuario') == usuario_ingresado:
+            return usuario
+    return None
+
+
+def validar_usuario(usuario_ingresado, clave_ingresada):
+    usuario = obtener_usuario(usuario_ingresado)
+    if not usuario:
+        return False
+
+    clave_db = str(usuario.get('clave', '')).strip()
+
+    if clave_ingresada == clave_db:
+        return True
+
+    try:
+        if check_password_hash(clave_db, clave_ingresada):
+            return True
+    except:
+        pass
+
+    return False
 
 
 def obtener_area(curso):
@@ -70,6 +104,10 @@ def convertir_fecha(fecha_texto):
         return None
 
 
+def es_admin():
+    return session.get('rol') == 'admin'
+
+
 @app.route('/')
 def inicio():
     return render_template('index.html')
@@ -112,8 +150,11 @@ def login():
         usuario = request.form['usuario']
         clave = request.form['clave']
 
-        if usuario == USUARIO_PANEL and clave == CLAVE_PANEL:
+        if validar_usuario(usuario, clave):
+            usuario_data = obtener_usuario(usuario)
             session['logueado'] = True
+            session['usuario'] = usuario
+            session['rol'] = usuario_data.get('rol', 'operador')
             return redirect(url_for('inscritos'))
         else:
             error = 'Usuario o contraseña incorrectos'
@@ -124,6 +165,8 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('logueado', None)
+    session.pop('usuario', None)
+    session.pop('rol', None)
     return redirect(url_for('login'))
 
 
@@ -212,7 +255,10 @@ def inscritos():
         areas_resumen=areas_resumen,
         ultimo_inscrito=ultimo_inscrito,
         grafico_labels=grafico_labels,
-        grafico_valores=grafico_valores
+        grafico_valores=grafico_valores,
+        usuario_actual=session.get('usuario'),
+        rol_actual=session.get('rol'),
+        es_admin=es_admin()
     )
 
 
@@ -282,6 +328,9 @@ def eliminar_inscrito(registro_id):
     if not session.get('logueado'):
         return redirect(url_for('login'))
 
+    if not es_admin():
+        return redirect(url_for('inscritos'))
+
     archivo = 'inscripciones.csv'
     filas = []
 
@@ -309,6 +358,9 @@ def eliminar_inscrito(registro_id):
 def editar_inscrito(registro_id):
     if not session.get('logueado'):
         return redirect(url_for('login'))
+
+    if not es_admin():
+        return redirect(url_for('inscritos'))
 
     archivo = 'inscripciones.csv'
     filas = []

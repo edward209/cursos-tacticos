@@ -1,0 +1,12 @@
+[
+    {
+        "usuario": "admin",
+        "clave": "098765",
+        "rol": "admin"
+    },
+    {
+        "usuario": "operador",
+        "clave": "123456",
+        "rol": "operador"
+    }
+]
