@@ -187,7 +187,7 @@
             border: none;
             border-radius: 10px;
             font-size: 15px;
-            min-width: 220px;
+            min-width: 200px;
         }
 
         .acciones {
@@ -398,6 +398,9 @@
                     <option value="Salud Mental" {% if area_filtro == 'Salud Mental' %}selected{% endif %}>Salud Mental</option>
                     <option value="Cursos Complementarios" {% if area_filtro == 'Cursos Complementarios' %}selected{% endif %}>Cursos Complementarios</option>
                 </select>
+
+                <input type="date" name="fecha_desde" value="{{ fecha_desde }}">
+                <input type="date" name="fecha_hasta" value="{{ fecha_hasta }}">
 
                 <button type="submit" class="btn">Filtrar</button>
                 <a href="/inscritos" class="btn">Limpiar</a>

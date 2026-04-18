@@ -63,6 +63,13 @@ def obtener_area(curso):
         return 'Otros'
 
 
+def convertir_fecha(fecha_texto):
+    try:
+        return datetime.strptime(fecha_texto, '%d/%m/%Y %H:%M')
+    except:
+        return None
+
+
 @app.route('/')
 def inicio():
     return render_template('index.html')
@@ -129,6 +136,24 @@ def inscritos():
     archivo = 'inscripciones.csv'
     busqueda = request.args.get('q', '').strip().lower()
     area_filtro = request.args.get('area', '').strip()
+    fecha_desde = request.args.get('fecha_desde', '').strip()
+    fecha_hasta = request.args.get('fecha_hasta', '').strip()
+
+    fecha_desde_dt = None
+    fecha_hasta_dt = None
+
+    try:
+        if fecha_desde:
+            fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d')
+    except:
+        fecha_desde_dt = None
+
+    try:
+        if fecha_hasta:
+            fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d')
+            fecha_hasta_dt = fecha_hasta_dt.replace(hour=23, minute=59, second=59)
+    except:
+        fecha_hasta_dt = None
 
     if os.path.isfile(archivo):
         with open(archivo, 'r', encoding='utf-8') as f:
@@ -138,6 +163,7 @@ def inscritos():
             for i, fila in enumerate(reader):
                 if len(fila) == 4:
                     area = obtener_area(fila[2])
+                    fecha_registro_dt = convertir_fecha(fila[3])
 
                     registro = {
                         'id': i,
@@ -153,7 +179,14 @@ def inscritos():
                     coincide_texto = (not busqueda or busqueda in texto)
                     coincide_area = (not area_filtro or area == area_filtro)
 
-                    if coincide_texto and coincide_area:
+                    coincide_fecha = True
+                    if fecha_registro_dt:
+                        if fecha_desde_dt and fecha_registro_dt < fecha_desde_dt:
+                            coincide_fecha = False
+                        if fecha_hasta_dt and fecha_registro_dt > fecha_hasta_dt:
+                            coincide_fecha = False
+
+                    if coincide_texto and coincide_area and coincide_fecha:
                         registros.append(registro)
 
     total_inscritos = len(registros)
@@ -173,6 +206,8 @@ def inscritos():
         registros=registros,
         busqueda=busqueda,
         area_filtro=area_filtro,
+        fecha_desde=fecha_desde,
+        fecha_hasta=fecha_hasta,
         total_inscritos=total_inscritos,
         areas_resumen=areas_resumen,
         ultimo_inscrito=ultimo_inscrito,
