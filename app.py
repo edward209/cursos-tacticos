@@ -1,29 +1,106 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
-import csv
 import os
-import json
+import sqlite3
+import csv
 from datetime import datetime
 from openpyxl import Workbook
 from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
-app.secret_key = 'clave_secreta_femp_2026'
+app.secret_key = os.environ.get("SECRET_KEY", "dev_key")
+
+DATABASE = "femp.db"
 
 
-def cargar_usuarios():
-    archivo = 'usuarios.json'
-    if os.path.isfile(archivo):
-        with open(archivo, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return []
+def get_db_connection():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def inicializar_db():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario TEXT UNIQUE NOT NULL,
+            clave TEXT NOT NULL,
+            rol TEXT NOT NULL DEFAULT 'operador'
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS inscritos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            correo TEXT NOT NULL,
+            curso TEXT NOT NULL,
+            fecha TEXT NOT NULL
+        )
+    """)
+
+    conn.commit()
+
+    cursor.execute("SELECT COUNT(*) as total FROM usuarios")
+    total = cursor.fetchone()["total"]
+
+    if total == 0:
+        cursor.execute(
+            "INSERT INTO usuarios (usuario, clave, rol) VALUES (?, ?, ?)",
+            ("admin", "098765", "admin")
+        )
+        cursor.execute(
+            "INSERT INTO usuarios (usuario, clave, rol) VALUES (?, ?, ?)",
+            ("operador", "123456", "operador")
+        )
+        conn.commit()
+
+    conn.close()
+
+
+def migrar_csv_a_sqlite():
+    archivo_csv = 'inscripciones.csv'
+
+    if not os.path.isfile(archivo_csv):
+        return
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) as total FROM inscritos")
+    total = cursor.fetchone()["total"]
+
+    if total > 0:
+        conn.close()
+        return
+
+    with open(archivo_csv, 'r', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        next(reader, None)
+
+        for fila in reader:
+            if len(fila) == 4:
+                cursor.execute(
+                    "INSERT INTO inscritos (nombre, correo, curso, fecha) VALUES (?, ?, ?, ?)",
+                    (fila[0], fila[1], fila[2], fila[3])
+                )
+
+    conn.commit()
+    conn.close()
+
+    print("✔ Datos migrados de CSV a SQLite")
 
 
 def obtener_usuario(usuario_ingresado):
-    usuarios = cargar_usuarios()
-    for usuario in usuarios:
-        if usuario.get('usuario') == usuario_ingresado:
-            return usuario
-    return None
+    conn = get_db_connection()
+    usuario = conn.execute(
+        "SELECT * FROM usuarios WHERE usuario = ?",
+        (usuario_ingresado,)
+    ).fetchone()
+    conn.close()
+    return usuario
 
 
 def validar_usuario(usuario_ingresado, clave_ingresada):
@@ -31,7 +108,7 @@ def validar_usuario(usuario_ingresado, clave_ingresada):
     if not usuario:
         return False
 
-    clave_db = str(usuario.get('clave', '')).strip()
+    clave_db = str(usuario["clave"]).strip()
 
     if clave_ingresada == clave_db:
         return True
@@ -39,7 +116,7 @@ def validar_usuario(usuario_ingresado, clave_ingresada):
     try:
         if check_password_hash(clave_db, clave_ingresada):
             return True
-    except:
+    except Exception:
         pass
 
     return False
@@ -100,7 +177,7 @@ def obtener_area(curso):
 def convertir_fecha(fecha_texto):
     try:
         return datetime.strptime(fecha_texto, '%d/%m/%Y %H:%M')
-    except:
+    except Exception:
         return None
 
 
@@ -121,25 +198,26 @@ def cursos():
 @app.route('/inscripcion', methods=['GET', 'POST'])
 def inscripcion():
     if request.method == 'POST':
-        nombre = request.form['nombre']
-        correo = request.form['correo']
-        curso = request.form['curso']
+        nombre = request.form.get('nombre', '').strip()
+        correo = request.form.get('correo', '').strip()
+        curso = request.form.get('curso', '').strip()
+
+        if not nombre or not correo or not curso:
+            return render_template('inscripcion.html', error='Todos los campos son obligatorios.')
+
         fecha = datetime.now().strftime('%d/%m/%Y %H:%M')
 
-        archivo = 'inscripciones.csv'
-        existe = os.path.isfile(archivo)
-
-        with open(archivo, 'a', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-
-            if not existe:
-                writer.writerow(['Nombre', 'Correo', 'Curso', 'Fecha'])
-
-            writer.writerow([nombre, correo, curso, fecha])
+        conn = get_db_connection()
+        conn.execute(
+            "INSERT INTO inscritos (nombre, correo, curso, fecha) VALUES (?, ?, ?, ?)",
+            (nombre, correo, curso, fecha)
+        )
+        conn.commit()
+        conn.close()
 
         return render_template('gracias.html', nombre=nombre)
 
-    return render_template('inscripcion.html')
+    return render_template('inscripcion.html', error=None)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -147,14 +225,14 @@ def login():
     error = None
 
     if request.method == 'POST':
-        usuario = request.form['usuario']
-        clave = request.form['clave']
+        usuario = request.form.get('usuario', '').strip()
+        clave = request.form.get('clave', '').strip()
 
         if validar_usuario(usuario, clave):
             usuario_data = obtener_usuario(usuario)
             session['logueado'] = True
             session['usuario'] = usuario
-            session['rol'] = usuario_data.get('rol', 'operador')
+            session['rol'] = usuario_data['rol']
             return redirect(url_for('inscritos'))
         else:
             error = 'Usuario o contraseña incorrectos'
@@ -175,8 +253,11 @@ def inscritos():
     if not session.get('logueado'):
         return redirect(url_for('login'))
 
+    conn = get_db_connection()
+    filas = conn.execute("SELECT * FROM inscritos ORDER BY id ASC").fetchall()
+    conn.close()
+
     registros = []
-    archivo = 'inscripciones.csv'
     busqueda = request.args.get('q', '').strip().lower()
     area_filtro = request.args.get('area', '').strip()
     fecha_desde = request.args.get('fecha_desde', '').strip()
@@ -188,49 +269,43 @@ def inscritos():
     try:
         if fecha_desde:
             fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d')
-    except:
+    except Exception:
         fecha_desde_dt = None
 
     try:
         if fecha_hasta:
             fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d')
             fecha_hasta_dt = fecha_hasta_dt.replace(hour=23, minute=59, second=59)
-    except:
+    except Exception:
         fecha_hasta_dt = None
 
-    if os.path.isfile(archivo):
-        with open(archivo, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f)
-            next(reader, None)
+    for fila in filas:
+        area = obtener_area(fila["curso"])
+        fecha_registro_dt = convertir_fecha(fila["fecha"])
 
-            for i, fila in enumerate(reader):
-                if len(fila) == 4:
-                    area = obtener_area(fila[2])
-                    fecha_registro_dt = convertir_fecha(fila[3])
+        registro = {
+            'id': fila["id"],
+            'nombre': fila["nombre"],
+            'correo': fila["correo"],
+            'curso': fila["curso"],
+            'fecha': fila["fecha"],
+            'area': area
+        }
 
-                    registro = {
-                        'id': i,
-                        'nombre': fila[0],
-                        'correo': fila[1],
-                        'curso': fila[2],
-                        'fecha': fila[3],
-                        'area': area
-                    }
+        texto = f"{fila['nombre']} {fila['correo']} {fila['curso']} {fila['fecha']} {area}".lower()
 
-                    texto = f"{fila[0]} {fila[1]} {fila[2]} {fila[3]} {area}".lower()
+        coincide_texto = (not busqueda or busqueda in texto)
+        coincide_area = (not area_filtro or area == area_filtro)
 
-                    coincide_texto = (not busqueda or busqueda in texto)
-                    coincide_area = (not area_filtro or area == area_filtro)
+        coincide_fecha = True
+        if fecha_registro_dt:
+            if fecha_desde_dt and fecha_registro_dt < fecha_desde_dt:
+                coincide_fecha = False
+            if fecha_hasta_dt and fecha_registro_dt > fecha_hasta_dt:
+                coincide_fecha = False
 
-                    coincide_fecha = True
-                    if fecha_registro_dt:
-                        if fecha_desde_dt and fecha_registro_dt < fecha_desde_dt:
-                            coincide_fecha = False
-                        if fecha_hasta_dt and fecha_registro_dt > fecha_hasta_dt:
-                            coincide_fecha = False
-
-                    if coincide_texto and coincide_area and coincide_fecha:
-                        registros.append(registro)
+        if coincide_texto and coincide_area and coincide_fecha:
+            registros.append(registro)
 
     total_inscritos = len(registros)
 
@@ -267,16 +342,23 @@ def descargar_inscritos():
     if not session.get('logueado'):
         return redirect(url_for('login'))
 
-    archivo = 'inscripciones.csv'
+    conn = get_db_connection()
+    filas = conn.execute("SELECT nombre, correo, curso, fecha FROM inscritos ORDER BY id ASC").fetchall()
+    conn.close()
 
-    if os.path.isfile(archivo):
-        return send_file(
-            archivo,
-            as_attachment=True,
-            download_name='inscritos.csv'
-        )
+    archivo = 'inscripciones_exportadas.csv'
 
-    return redirect(url_for('inscritos'))
+    with open(archivo, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Nombre', 'Correo', 'Curso', 'Fecha'])
+        for fila in filas:
+            writer.writerow([fila["nombre"], fila["correo"], fila["curso"], fila["fecha"]])
+
+    return send_file(
+        archivo,
+        as_attachment=True,
+        download_name='inscritos.csv'
+    )
 
 
 @app.route('/descargar-excel')
@@ -284,7 +366,10 @@ def descargar_excel():
     if not session.get('logueado'):
         return redirect(url_for('login'))
 
-    archivo_csv = 'inscripciones.csv'
+    conn = get_db_connection()
+    filas = conn.execute("SELECT nombre, correo, curso, fecha FROM inscritos ORDER BY id ASC").fetchall()
+    conn.close()
+
     archivo_excel = 'inscritos.xlsx'
 
     wb = Workbook()
@@ -294,14 +379,8 @@ def descargar_excel():
     encabezados = ['Nombre', 'Correo', 'Curso', 'Fecha']
     ws.append(encabezados)
 
-    if os.path.isfile(archivo_csv):
-        with open(archivo_csv, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f)
-            next(reader, None)
-
-            for fila in reader:
-                if len(fila) == 4:
-                    ws.append(fila)
+    for fila in filas:
+        ws.append([fila["nombre"], fila["correo"], fila["curso"], fila["fecha"]])
 
     for col in ws.columns:
         max_length = 0
@@ -310,7 +389,7 @@ def descargar_excel():
             try:
                 if cell.value:
                     max_length = max(max_length, len(str(cell.value)))
-            except:
+            except Exception:
                 pass
         ws.column_dimensions[column].width = max_length + 4
 
@@ -331,25 +410,10 @@ def eliminar_inscrito(registro_id):
     if not es_admin():
         return redirect(url_for('inscritos'))
 
-    archivo = 'inscripciones.csv'
-    filas = []
-
-    if os.path.isfile(archivo):
-        with open(archivo, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f)
-            encabezado = next(reader, None)
-
-            for fila in reader:
-                if len(fila) == 4:
-                    filas.append(fila)
-
-        if 0 <= registro_id < len(filas):
-            filas.pop(registro_id)
-
-        with open(archivo, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(encabezado if encabezado else ['Nombre', 'Correo', 'Curso', 'Fecha'])
-            writer.writerows(filas)
+    conn = get_db_connection()
+    conn.execute("DELETE FROM inscritos WHERE id = ?", (registro_id,))
+    conn.commit()
+    conn.close()
 
     return redirect(url_for('inscritos'))
 
@@ -362,50 +426,54 @@ def editar_inscrito(registro_id):
     if not es_admin():
         return redirect(url_for('inscritos'))
 
-    archivo = 'inscripciones.csv'
-    filas = []
-    encabezado = ['Nombre', 'Correo', 'Curso', 'Fecha']
+    conn = get_db_connection()
+    fila = conn.execute("SELECT * FROM inscritos WHERE id = ?", (registro_id,)).fetchone()
 
-    if os.path.isfile(archivo):
-        with open(archivo, 'r', encoding='utf-8') as f:
-            reader = csv.reader(f)
-            encabezado_archivo = next(reader, None)
-
-            if encabezado_archivo:
-                encabezado = encabezado_archivo
-
-            for fila in reader:
-                if len(fila) == 4:
-                    filas.append(fila)
-
-    if not (0 <= registro_id < len(filas)):
+    if not fila:
+        conn.close()
         return redirect(url_for('inscritos'))
 
     if request.method == 'POST':
-        nuevo_nombre = request.form['nombre']
-        nuevo_correo = request.form['correo']
-        nuevo_curso = request.form['curso']
-        fecha_original = filas[registro_id][3]
+        nuevo_nombre = request.form.get('nombre', '').strip()
+        nuevo_correo = request.form.get('correo', '').strip()
+        nuevo_curso = request.form.get('curso', '').strip()
 
-        filas[registro_id] = [nuevo_nombre, nuevo_correo, nuevo_curso, fecha_original]
+        if not nuevo_nombre or not nuevo_correo or not nuevo_curso:
+            registro = {
+                'id': fila["id"],
+                'nombre': fila["nombre"],
+                'correo': fila["correo"],
+                'curso': fila["curso"],
+                'fecha': fila["fecha"]
+            }
+            conn.close()
+            return render_template('editar.html', registro=registro, error='Todos los campos son obligatorios.')
 
-        with open(archivo, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(encabezado)
-            writer.writerows(filas)
-
+        conn.execute(
+            "UPDATE inscritos SET nombre = ?, correo = ?, curso = ? WHERE id = ?",
+            (nuevo_nombre, nuevo_correo, nuevo_curso, registro_id)
+        )
+        conn.commit()
+        conn.close()
         return redirect(url_for('inscritos'))
 
     registro = {
-        'id': registro_id,
-        'nombre': filas[registro_id][0],
-        'correo': filas[registro_id][1],
-        'curso': filas[registro_id][2],
-        'fecha': filas[registro_id][3]
+        'id': fila["id"],
+        'nombre': fila["nombre"],
+        'correo': fila["correo"],
+        'curso': fila["curso"],
+        'fecha': fila["fecha"]
     }
 
-    return render_template('editar.html', registro=registro)
+    conn.close()
+    return render_template('editar.html', registro=registro, error=None)
 
 
 if __name__ == '__main__':
+    inicializar_db()
+    migrar_csv_a_sqlite()
     app.run(debug=True)
+else:
+    inicializar_db()
+    migrar_csv_a_sqlite()
+    

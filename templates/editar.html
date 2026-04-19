@@ -66,6 +66,12 @@
             margin-bottom: 15px;
         }
 
+        .error {
+            color: #ff6666;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
         .fecha {
             color: #00ff88;
             font-weight: bold;
@@ -119,13 +125,17 @@
             <h3>Fundación de Enfermeros Militares y Policía</h3>
             <p>Actualice los datos del participante registrado.</p>
 
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+
             <div class="fecha">Fecha de inscripción: {{ registro.fecha }}</div>
 
-            <form method="POST">
-                <input type="text" name="nombre" value="{{ registro.nombre }}" required>
-                <input type="email" name="correo" value="{{ registro.correo }}" required>
+            <form method="POST" onsubmit="desactivarBotonGuardado()">
+                <input type="text" name="nombre" value="{{ registro.nombre }}" required minlength="5" autocomplete="name">
+                <input type="email" name="correo" value="{{ registro.correo }}" required autocomplete="email">
 
-                <select id="area" required onchange="actualizarCursosEditar()">
+                <select id="area" name="area" required onchange="actualizarCursosEditar()">
                     <option value="">Selecciona un área</option>
                     <option value="medicina">⚕️ Área de Medicina Táctica</option>
                     <option value="auxilios">🚑 Primeros Auxilios</option>
@@ -137,7 +147,7 @@
                     <option value="{{ registro.curso }}">{{ registro.curso }}</option>
                 </select>
 
-                <button type="submit">Guardar cambios</button>
+                <button id="btnGuardar" type="submit">Guardar cambios</button>
             </form>
 
             <div class="volver">
@@ -218,6 +228,12 @@
                 }
                 selectCurso.appendChild(option);
             });
+        }
+
+        function desactivarBotonGuardado() {
+            const boton = document.getElementById('btnGuardar');
+            boton.disabled = true;
+            boton.innerText = 'Guardando...';
         }
 
         window.onload = function() {

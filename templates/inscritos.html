@@ -57,6 +57,12 @@
             color: #00ff88;
         }
 
+        .topbar-left small {
+            color: #d0d0d0;
+            display: block;
+            margin-top: 4px;
+        }
+
         .topbar-links {
             display: flex;
             gap: 12px;
@@ -310,6 +316,7 @@
             .topbar-left {
                 width: 100%;
                 justify-content: center;
+                text-align: center;
             }
 
             .topbar-links {
@@ -331,7 +338,10 @@
     <div class="topbar">
         <div class="topbar-left">
             <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
-            <h2>F.E.M.P. - Panel Administrativo</h2>
+            <div>
+                <h2>F.E.M.P. - Panel Administrativo</h2>
+                <small>Usuario: {{ usuario_actual }} | Rol: {{ rol_actual }}</small>
+            </div>
         </div>
 
         <div class="topbar-links">
@@ -410,14 +420,13 @@
         <div class="acciones">
             <a href="/descargar-inscritos" class="btn">Descargar CSV</a>
             <a href="/descargar-excel" class="btn">Descargar Excel</a>
-            <a href="/logout" class="btn">Cerrar sesión</a>
         </div>
 
         <div class="tabla-box">
             <div class="tabla-scroll">
                 <table>
                     <tr>
-                        <th>#</th>
+                        <th>ID</th>
                         <th>Nombre</th>
                         <th>Correo</th>
                         <th>Curso</th>
@@ -428,20 +437,24 @@
 
                     {% for r in registros %}
                     <tr>
-                        <td>{{ loop.index }}</td>
+                        <td>{{ r.id }}</td>
                         <td>{{ r.nombre }}</td>
                         <td>{{ r.correo }}</td>
                         <td>{{ r.curso }}</td>
                         <td>{{ r.area }}</td>
                         <td>{{ r.fecha }}</td>
                         <td>
-                            <div class="acciones-fila">
-                                <a href="/editar-inscrito/{{ r.id }}" class="btn btn-edit">Editar</a>
+                            {% if es_admin %}
+                                <div class="acciones-fila">
+                                    <a href="/editar-inscrito/{{ r.id }}" class="btn btn-edit">Editar</a>
 
-                                <form method="POST" action="/eliminar-inscrito/{{ r.id }}" class="form-eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar este inscrito?');">
-                                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                                </form>
-                            </div>
+                                    <form method="POST" action="/eliminar-inscrito/{{ r.id }}" class="form-eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar este inscrito?');">
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    </form>
+                                </div>
+                            {% else %}
+                                <span>Solo lectura</span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% else %}

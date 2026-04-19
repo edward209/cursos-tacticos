@@ -113,6 +113,12 @@
             margin-bottom: 24px;
         }
 
+        .error {
+            color: #ff6666;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
         input, select {
             width: 100%;
             padding: 14px 15px;
@@ -172,11 +178,15 @@
             <h1>📢 Inscripciones abiertas</h1>
             <p>Completa tus datos para reservar tu cupo en nuestros programas de capacitación.</p>
 
-            <form method="POST">
-                <input type="text" name="nombre" placeholder="Nombre completo" required>
-                <input type="email" name="correo" placeholder="Correo electrónico" required>
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
 
-                <select id="area" required onchange="actualizarCursos()">
+            <form method="POST" onsubmit="desactivarBotonEnvio()">
+                <input type="text" name="nombre" placeholder="Nombre completo" required minlength="5" autocomplete="name">
+                <input type="email" name="correo" placeholder="Correo electrónico" required autocomplete="email">
+
+                <select id="area" name="area" required onchange="actualizarCursos()">
                     <option value="">Selecciona un área</option>
                     <option value="medicina">⚕️ Área de Medicina Táctica</option>
                     <option value="auxilios">🚑 Primeros Auxilios</option>
@@ -188,7 +198,7 @@
                     <option value="">Selecciona primero un área</option>
                 </select>
 
-                <button type="submit">Enviar inscripción</button>
+                <button id="btnEnviar" type="submit">Enviar inscripción</button>
             </form>
 
             <div class="info">
@@ -260,6 +270,12 @@
                 option.textContent = curso;
                 selectCurso.appendChild(option);
             });
+        }
+
+        function desactivarBotonEnvio() {
+            const boton = document.getElementById('btnEnviar');
+            boton.disabled = true;
+            boton.innerText = 'Enviando...';
         }
     </script>
 
