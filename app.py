@@ -1,37 +1,100 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
 import os
-import sqlite3
 import csv
+import sqlite3
 from datetime import datetime
+from urllib.parse import urlparse
+
 from openpyxl import Workbook
 from werkzeug.security import check_password_hash
+
+import psycopg2
+import psycopg2.extras
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev_key")
 
-DATABASE = "femp.db"
+DATABASE_URL = os.environ.get("DATABASE_URL")
+SQLITE_DB = "femp.db"
+
+
+def usar_postgres():
+    return bool(DATABASE_URL)
 
 
 def get_db_connection():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    return conn
+    if usar_postgres():
+        url = urlparse(DATABASE_URL)
+        conn = psycopg2.connect(
+            dbname=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port,
+            sslmode="require"
+        )
+        return conn
+    else:
+        conn = sqlite3.connect(SQLITE_DB)
+        conn.row_factory = sqlite3.Row
+        return conn
+
+
+def get_cursor(conn):
+    if usar_postgres():
+        return conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    return conn.cursor()
+
+
+def fetchone_dict(cursor):
+    row = cursor.fetchone()
+    if row is None:
+        return None
+    if isinstance(row, sqlite3.Row):
+        return dict(row)
+    return dict(row)
+
+
+def fetchall_dict(cursor):
+    rows = cursor.fetchall()
+    if usar_postgres():
+        return [dict(r) for r in rows]
+    return [dict(r) for r in rows]
+
+
+def q(sql_postgres, sql_sqlite):
+    return sql_postgres if usar_postgres() else sql_sqlite
 
 
 def inicializar_db():
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
-    cursor.execute("""
+    cursor.execute(q("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id SERIAL PRIMARY KEY,
+            usuario TEXT UNIQUE NOT NULL,
+            clave TEXT NOT NULL,
+            rol TEXT NOT NULL DEFAULT 'operador'
+        )
+    """, """
         CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             usuario TEXT UNIQUE NOT NULL,
             clave TEXT NOT NULL,
             rol TEXT NOT NULL DEFAULT 'operador'
         )
-    """)
+    """))
 
-    cursor.execute("""
+    cursor.execute(q("""
+        CREATE TABLE IF NOT EXISTS inscritos (
+            id SERIAL PRIMARY KEY,
+            nombre TEXT NOT NULL,
+            correo TEXT NOT NULL,
+            curso TEXT NOT NULL,
+            fecha TEXT NOT NULL
+        )
+    """, """
         CREATE TABLE IF NOT EXISTS inscritos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
@@ -39,66 +102,86 @@ def inicializar_db():
             curso TEXT NOT NULL,
             fecha TEXT NOT NULL
         )
-    """)
+    """))
 
     conn.commit()
 
-    cursor.execute("SELECT COUNT(*) as total FROM usuarios")
-    total = cursor.fetchone()["total"]
+    cursor.execute("SELECT COUNT(*) AS total FROM usuarios")
+    total_row = fetchone_dict(cursor)
+    total = total_row["total"] if total_row else 0
 
     if total == 0:
         cursor.execute(
-            "INSERT INTO usuarios (usuario, clave, rol) VALUES (?, ?, ?)",
+            q(
+                "INSERT INTO usuarios (usuario, clave, rol) VALUES (%s, %s, %s)",
+                "INSERT INTO usuarios (usuario, clave, rol) VALUES (?, ?, ?)"
+            ),
             ("admin", "098765", "admin")
         )
         cursor.execute(
-            "INSERT INTO usuarios (usuario, clave, rol) VALUES (?, ?, ?)",
+            q(
+                "INSERT INTO usuarios (usuario, clave, rol) VALUES (%s, %s, %s)",
+                "INSERT INTO usuarios (usuario, clave, rol) VALUES (?, ?, ?)"
+            ),
             ("operador", "123456", "operador")
         )
         conn.commit()
 
+    cursor.close()
     conn.close()
 
 
-def migrar_csv_a_sqlite():
-    archivo_csv = 'inscripciones.csv'
+def migrar_csv_a_db():
+    archivo_csv = "inscripciones.csv"
 
     if not os.path.isfile(archivo_csv):
         return
 
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
-    cursor.execute("SELECT COUNT(*) as total FROM inscritos")
-    total = cursor.fetchone()["total"]
+    cursor.execute("SELECT COUNT(*) AS total FROM inscritos")
+    total_row = fetchone_dict(cursor)
+    total = total_row["total"] if total_row else 0
 
     if total > 0:
+        cursor.close()
         conn.close()
         return
 
-    with open(archivo_csv, 'r', encoding='utf-8') as f:
+    with open(archivo_csv, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         next(reader, None)
 
         for fila in reader:
             if len(fila) == 4:
                 cursor.execute(
-                    "INSERT INTO inscritos (nombre, correo, curso, fecha) VALUES (?, ?, ?, ?)",
+                    q(
+                        "INSERT INTO inscritos (nombre, correo, curso, fecha) VALUES (%s, %s, %s, %s)",
+                        "INSERT INTO inscritos (nombre, correo, curso, fecha) VALUES (?, ?, ?, ?)"
+                    ),
                     (fila[0], fila[1], fila[2], fila[3])
                 )
 
     conn.commit()
+    cursor.close()
     conn.close()
-
-    print("✔ Datos migrados de CSV a SQLite")
 
 
 def obtener_usuario(usuario_ingresado):
     conn = get_db_connection()
-    usuario = conn.execute(
-        "SELECT * FROM usuarios WHERE usuario = ?",
+    cursor = get_cursor(conn)
+
+    cursor.execute(
+        q(
+            "SELECT * FROM usuarios WHERE usuario = %s",
+            "SELECT * FROM usuarios WHERE usuario = ?"
+        ),
         (usuario_ingresado,)
-    ).fetchone()
+    )
+
+    usuario = fetchone_dict(cursor)
+    cursor.close()
     conn.close()
     return usuario
 
@@ -208,11 +291,16 @@ def inscripcion():
         fecha = datetime.now().strftime('%d/%m/%Y %H:%M')
 
         conn = get_db_connection()
-        conn.execute(
-            "INSERT INTO inscritos (nombre, correo, curso, fecha) VALUES (?, ?, ?, ?)",
+        cursor = get_cursor(conn)
+        cursor.execute(
+            q(
+                "INSERT INTO inscritos (nombre, correo, curso, fecha) VALUES (%s, %s, %s, %s)",
+                "INSERT INTO inscritos (nombre, correo, curso, fecha) VALUES (?, ?, ?, ?)"
+            ),
             (nombre, correo, curso, fecha)
         )
         conn.commit()
+        cursor.close()
         conn.close()
 
         return render_template('gracias.html', nombre=nombre)
@@ -254,7 +342,10 @@ def inscritos():
         return redirect(url_for('login'))
 
     conn = get_db_connection()
-    filas = conn.execute("SELECT * FROM inscritos ORDER BY id ASC").fetchall()
+    cursor = get_cursor(conn)
+    cursor.execute("SELECT * FROM inscritos ORDER BY id ASC")
+    filas = fetchall_dict(cursor)
+    cursor.close()
     conn.close()
 
     registros = []
@@ -315,7 +406,6 @@ def inscritos():
         areas_resumen[area] = areas_resumen.get(area, 0) + 1
 
     ultimo_inscrito = registros[-1] if registros else None
-
     grafico_labels = list(areas_resumen.keys())
     grafico_valores = list(areas_resumen.values())
 
@@ -343,7 +433,10 @@ def descargar_inscritos():
         return redirect(url_for('login'))
 
     conn = get_db_connection()
-    filas = conn.execute("SELECT nombre, correo, curso, fecha FROM inscritos ORDER BY id ASC").fetchall()
+    cursor = get_cursor(conn)
+    cursor.execute("SELECT nombre, correo, curso, fecha FROM inscritos ORDER BY id ASC")
+    filas = fetchall_dict(cursor)
+    cursor.close()
     conn.close()
 
     archivo = 'inscripciones_exportadas.csv'
@@ -367,7 +460,10 @@ def descargar_excel():
         return redirect(url_for('login'))
 
     conn = get_db_connection()
-    filas = conn.execute("SELECT nombre, correo, curso, fecha FROM inscritos ORDER BY id ASC").fetchall()
+    cursor = get_cursor(conn)
+    cursor.execute("SELECT nombre, correo, curso, fecha FROM inscritos ORDER BY id ASC")
+    filas = fetchall_dict(cursor)
+    cursor.close()
     conn.close()
 
     archivo_excel = 'inscritos.xlsx'
@@ -375,9 +471,7 @@ def descargar_excel():
     wb = Workbook()
     ws = wb.active
     ws.title = "Inscritos"
-
-    encabezados = ['Nombre', 'Correo', 'Curso', 'Fecha']
-    ws.append(encabezados)
+    ws.append(['Nombre', 'Correo', 'Curso', 'Fecha'])
 
     for fila in filas:
         ws.append([fila["nombre"], fila["correo"], fila["curso"], fila["fecha"]])
@@ -386,11 +480,8 @@ def descargar_excel():
         max_length = 0
         column = col[0].column_letter
         for cell in col:
-            try:
-                if cell.value:
-                    max_length = max(max_length, len(str(cell.value)))
-            except Exception:
-                pass
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
         ws.column_dimensions[column].width = max_length + 4
 
     wb.save(archivo_excel)
@@ -411,8 +502,16 @@ def eliminar_inscrito(registro_id):
         return redirect(url_for('inscritos'))
 
     conn = get_db_connection()
-    conn.execute("DELETE FROM inscritos WHERE id = ?", (registro_id,))
+    cursor = get_cursor(conn)
+    cursor.execute(
+        q(
+            "DELETE FROM inscritos WHERE id = %s",
+            "DELETE FROM inscritos WHERE id = ?"
+        ),
+        (registro_id,)
+    )
     conn.commit()
+    cursor.close()
     conn.close()
 
     return redirect(url_for('inscritos'))
@@ -427,9 +526,19 @@ def editar_inscrito(registro_id):
         return redirect(url_for('inscritos'))
 
     conn = get_db_connection()
-    fila = conn.execute("SELECT * FROM inscritos WHERE id = ?", (registro_id,)).fetchone()
+    cursor = get_cursor(conn)
+
+    cursor.execute(
+        q(
+            "SELECT * FROM inscritos WHERE id = %s",
+            "SELECT * FROM inscritos WHERE id = ?"
+        ),
+        (registro_id,)
+    )
+    fila = fetchone_dict(cursor)
 
     if not fila:
+        cursor.close()
         conn.close()
         return redirect(url_for('inscritos'))
 
@@ -446,14 +555,19 @@ def editar_inscrito(registro_id):
                 'curso': fila["curso"],
                 'fecha': fila["fecha"]
             }
+            cursor.close()
             conn.close()
             return render_template('editar.html', registro=registro, error='Todos los campos son obligatorios.')
 
-        conn.execute(
-            "UPDATE inscritos SET nombre = ?, correo = ?, curso = ? WHERE id = ?",
+        cursor.execute(
+            q(
+                "UPDATE inscritos SET nombre = %s, correo = %s, curso = %s WHERE id = %s",
+                "UPDATE inscritos SET nombre = ?, correo = ?, curso = ? WHERE id = ?"
+            ),
             (nuevo_nombre, nuevo_correo, nuevo_curso, registro_id)
         )
         conn.commit()
+        cursor.close()
         conn.close()
         return redirect(url_for('inscritos'))
 
@@ -465,15 +579,13 @@ def editar_inscrito(registro_id):
         'fecha': fila["fecha"]
     }
 
+    cursor.close()
     conn.close()
     return render_template('editar.html', registro=registro, error=None)
 
 
+inicializar_db()
+migrar_csv_a_db()
+
 if __name__ == '__main__':
-    inicializar_db()
-    migrar_csv_a_sqlite()
     app.run(debug=True)
-else:
-    inicializar_db()
-    migrar_csv_a_sqlite()
-    
