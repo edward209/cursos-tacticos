@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestión de Usuarios | F.E.M.P.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background:
+                linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.92)),
+                url("{{ url_for('static', filename='portada.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+        }
+
+        .topbar {
+            background: rgba(0,0,0,0.92);
+            border-bottom: 1px solid rgba(0,255,136,0.35);
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-left img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 2px solid #00ff88;
+            object-fit: cover;
+            background: white;
+        }
+
+        .topbar-left h2 {
+            margin: 0;
+            color: #00ff88;
+            font-size: 20px;
+        }
+
+        .topbar-left small {
+            color: #d0d0d0;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .topbar-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .topbar-links a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 14px;
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+            transition: 0.3s;
+        }
+
+        .topbar-links a:hover {
+            background: #00ff88;
+            color: black;
+        }
+
+        .contenedor {
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .titulo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .titulo h1 {
+            margin: 0 0 10px 0;
+            font-size: 40px;
+            color: #00ff88;
+        }
+
+        .titulo p {
+            margin: 0;
+            color: #d0d0d0;
+            font-size: 18px;
+        }
+
+        .acciones {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            background: #00ff88;
+            color: black;
+            text-decoration: none;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+        }
+
+        .btn-edit {
+            background: #1e90ff;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #1877d9;
+        }
+
+        .btn-danger {
+            background: #ff3b3b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d62c2c;
+        }
+
+        .tabla-box {
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+        }
+
+        .tabla-scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1100px;
+        }
+
+        th, td {
+            padding: 16px 14px;
+            border-bottom: 1px solid rgba(0,255,136,0.16);
+            text-align: left;
+        }
+
+        th {
+            color: #00ff88;
+            background: rgba(0,255,136,0.07);
+            font-size: 16px;
+        }
+
+        td {
+            color: #f0f0f0;
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .estado-activo {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .estado-inactivo {
+            color: #ff6666;
+            font-weight: bold;
+        }
+
+        .acciones-fila {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .form-inline {
+            margin: 0;
+        }
+
+        .sin-datos {
+            text-align: center;
+            padding: 24px;
+            color: #d0d0d0;
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 26px;
+        }
+
+        .footer-link a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .topbar {
+                justify-content: center;
+                gap: 14px;
+            }
+
+            .topbar-left {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .topbar-links {
+                justify-content: center;
+            }
+
+            .titulo h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="topbar-left">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+            <div>
+                <h2>F.E.M.P. - Gestión de Usuarios</h2>
+                <small>Usuario: {{ usuario_actual }} | Rol: {{ rol_actual }}</small>
+            </div>
+        </div>
+
+        <div class="topbar-links">
+            <a href="/">Inicio</a>
+            <a href="/inscritos">Panel</a>
+            <a href="/crear-usuario">Crear usuario</a>
+            <a href="/logout">Cerrar sesión</a>
+        </div>
+    </div>
+
+    <div class="contenedor">
+        <div class="titulo">
+            <h1>Usuarios del sistema</h1>
+            <p>Administra administradores, operadores, maestros y estudiantes</p>
+        </div>
+
+        <div class="acciones">
+            <a href="/crear-usuario" class="btn">+ Crear usuario</a>
+            <a href="/inscritos" class="btn">Volver al panel</a>
+        </div>
+
+        <div class="tabla-box">
+            <div class="tabla-scroll">
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Usuario</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Fecha de creación</th>
+                        <th>Acciones</th>
+                    </tr>
+
+                    {% for u in usuarios %}
+                    <tr>
+                        <td>{{ u.id }}</td>
+                        <td>{{ u.nombre }}</td>
+                        <td>{{ u.usuario }}</td>
+                        <td>{{ u.correo }}</td>
+                        <td>{{ u.rol|capitalize }}</td>
+                        <td>
+                            {% if u.activo == 1 %}
+                                <span class="estado-activo">Activo</span>
+                            {% else %}
+                                <span class="estado-inactivo">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ u.fecha_creacion }}</td>
+                        <td>
+                            <div class="acciones-fila">
+                                <a href="/editar-usuario/{{ u.id }}" class="btn btn-edit">Editar</a>
+
+                                <form method="POST" action="/toggle-usuario/{{ u.id }}" class="form-inline">
+                                    {% if u.activo == 1 %}
+                                        <button type="submit" class="btn btn-danger">Desactivar</button>
+                                    {% else %}
+                                        <button type="submit" class="btn">Activar</button>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="sin-datos">No hay usuarios registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div class="footer-link">
+            <a href="/inscritos">← Volver al panel administrativo</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -6,7 +6,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 
 from openpyxl import Workbook
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 import psycopg2
 import psycopg2.extras
@@ -66,6 +66,14 @@ def q(sql_postgres, sql_sqlite):
     return sql_postgres if usar_postgres() else sql_sqlite
 
 
+def hoy_texto():
+    return datetime.now().strftime('%d/%m/%Y %H:%M')
+
+
+# =========================
+# BASE DE DATOS
+# =========================
+
 def inicializar_db():
     conn = get_db_connection()
     cursor = get_cursor(conn)
@@ -73,16 +81,24 @@ def inicializar_db():
     cursor.execute(q("""
         CREATE TABLE IF NOT EXISTS usuarios (
             id SERIAL PRIMARY KEY,
+            nombre TEXT,
             usuario TEXT UNIQUE NOT NULL,
+            correo TEXT,
             clave TEXT NOT NULL,
-            rol TEXT NOT NULL DEFAULT 'operador'
+            rol TEXT NOT NULL DEFAULT 'operador',
+            activo INTEGER NOT NULL DEFAULT 1,
+            fecha_creacion TEXT
         )
     """, """
         CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT,
             usuario TEXT UNIQUE NOT NULL,
+            correo TEXT,
             clave TEXT NOT NULL,
-            rol TEXT NOT NULL DEFAULT 'operador'
+            rol TEXT NOT NULL DEFAULT 'operador',
+            activo INTEGER NOT NULL DEFAULT 1,
+            fecha_creacion TEXT
         )
     """))
 
@@ -105,28 +121,148 @@ def inicializar_db():
     """))
 
     conn.commit()
+    cursor.close()
+    conn.close()
 
-    cursor.execute("SELECT COUNT(*) AS total FROM usuarios")
-    total_row = fetchone_dict(cursor)
-    total = total_row["total"] if total_row else 0
+    migrar_estructura_usuarios()
+    crear_usuarios_base()
 
-    if total == 0:
+
+def migrar_estructura_usuarios():
+    conn = get_db_connection()
+    cursor = get_cursor(conn)
+
+    if usar_postgres():
+        cursor.execute("""
+            ALTER TABLE usuarios
+            ADD COLUMN IF NOT EXISTS nombre TEXT
+        """)
+        cursor.execute("""
+            ALTER TABLE usuarios
+            ADD COLUMN IF NOT EXISTS correo TEXT
+        """)
+        cursor.execute("""
+            ALTER TABLE usuarios
+            ADD COLUMN IF NOT EXISTS activo INTEGER NOT NULL DEFAULT 1
+        """)
+        cursor.execute("""
+            ALTER TABLE usuarios
+            ADD COLUMN IF NOT EXISTS fecha_creacion TEXT
+        """)
+    else:
+        cursor.execute("PRAGMA table_info(usuarios)")
+        columnas = [fila[1] for fila in cursor.fetchall()]
+
+        if "nombre" not in columnas:
+            cursor.execute("ALTER TABLE usuarios ADD COLUMN nombre TEXT")
+        if "correo" not in columnas:
+            cursor.execute("ALTER TABLE usuarios ADD COLUMN correo TEXT")
+        if "activo" not in columnas:
+            cursor.execute("ALTER TABLE usuarios ADD COLUMN activo INTEGER NOT NULL DEFAULT 1")
+        if "fecha_creacion" not in columnas:
+            cursor.execute("ALTER TABLE usuarios ADD COLUMN fecha_creacion TEXT")
+
+    conn.commit()
+
+    cursor.execute("SELECT id, usuario, rol, nombre, correo, fecha_creacion FROM usuarios")
+    usuarios = fetchall_dict(cursor)
+
+    for u in usuarios:
+        nombre = u.get("nombre")
+        correo = u.get("correo")
+        fecha_creacion = u.get("fecha_creacion")
+
+        if not nombre:
+            nombre = u["usuario"]
+
+        if not correo:
+            correo = f'{u["usuario"]}@femp.local'
+
+        if not fecha_creacion:
+            fecha_creacion = hoy_texto()
+
         cursor.execute(
             q(
-                "INSERT INTO usuarios (usuario, clave, rol) VALUES (%s, %s, %s)",
-                "INSERT INTO usuarios (usuario, clave, rol) VALUES (?, ?, ?)"
+                "UPDATE usuarios SET nombre = %s, correo = %s, fecha_creacion = %s WHERE id = %s",
+                "UPDATE usuarios SET nombre = ?, correo = ?, fecha_creacion = ? WHERE id = ?"
             ),
-            ("admin", "098765", "admin")
+            (nombre, correo, fecha_creacion, u["id"])
         )
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def crear_usuarios_base():
+    conn = get_db_connection()
+    cursor = get_cursor(conn)
+
+    usuarios_base = [
+        {
+            "nombre": "Administrador Principal",
+            "usuario": "admin",
+            "correo": "admin@femp.local",
+            "clave": "098765",
+            "rol": "admin"
+        },
+        {
+            "nombre": "Operador Principal",
+            "usuario": "operador",
+            "correo": "operador@femp.local",
+            "clave": "123456",
+            "rol": "operador"
+        },
+        {
+            "nombre": "Maestro Demo",
+            "usuario": "maestro",
+            "correo": "maestro@femp.local",
+            "clave": "123456",
+            "rol": "maestro"
+        },
+        {
+            "nombre": "Estudiante Demo",
+            "usuario": "estudiante",
+            "correo": "estudiante@femp.local",
+            "clave": "123456",
+            "rol": "estudiante"
+        }
+    ]
+
+    for u in usuarios_base:
         cursor.execute(
             q(
-                "INSERT INTO usuarios (usuario, clave, rol) VALUES (%s, %s, %s)",
-                "INSERT INTO usuarios (usuario, clave, rol) VALUES (?, ?, ?)"
+                "SELECT id FROM usuarios WHERE usuario = %s",
+                "SELECT id FROM usuarios WHERE usuario = ?"
             ),
-            ("operador", "123456", "operador")
+            (u["usuario"],)
         )
-        conn.commit()
+        existe = fetchone_dict(cursor)
 
+        if not existe:
+            cursor.execute(
+                q(
+                    """
+                    INSERT INTO usuarios (nombre, usuario, correo, clave, rol, activo, fecha_creacion)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """,
+                    """
+                    INSERT INTO usuarios (nombre, usuario, correo, clave, rol, activo, fecha_creacion)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """
+                ),
+                (
+                    u["nombre"],
+                    u["usuario"],
+                    u["correo"],
+                    generate_password_hash(u["clave"]),
+                    u["rol"],
+                    1,
+                    hoy_texto()
+                )
+            )
+
+    conn.commit()
     cursor.close()
     conn.close()
 
@@ -168,6 +304,10 @@ def migrar_csv_a_db():
     conn.close()
 
 
+# =========================
+# USUARIOS Y ROLES
+# =========================
+
 def obtener_usuario(usuario_ingresado):
     conn = get_db_connection()
     cursor = get_cursor(conn)
@@ -186,9 +326,139 @@ def obtener_usuario(usuario_ingresado):
     return usuario
 
 
+def obtener_usuario_por_id(usuario_id):
+    conn = get_db_connection()
+    cursor = get_cursor(conn)
+
+    cursor.execute(
+        q(
+            "SELECT * FROM usuarios WHERE id = %s",
+            "SELECT * FROM usuarios WHERE id = ?"
+        ),
+        (usuario_id,)
+    )
+
+    usuario = fetchone_dict(cursor)
+    cursor.close()
+    conn.close()
+    return usuario
+
+
+def listar_usuarios():
+    conn = get_db_connection()
+    cursor = get_cursor(conn)
+
+    cursor.execute("SELECT * FROM usuarios ORDER BY id ASC")
+    usuarios = fetchall_dict(cursor)
+
+    cursor.close()
+    conn.close()
+    return usuarios
+
+
+def crear_usuario(nombre, usuario, correo, clave, rol):
+    conn = get_db_connection()
+    cursor = get_cursor(conn)
+
+    cursor.execute(
+        q(
+            "SELECT id FROM usuarios WHERE usuario = %s OR correo = %s",
+            "SELECT id FROM usuarios WHERE usuario = ? OR correo = ?"
+        ),
+        (usuario, correo)
+    )
+    existente = fetchone_dict(cursor)
+
+    if existente:
+        cursor.close()
+        conn.close()
+        return False, "El usuario o el correo ya existe."
+
+    clave_hash = generate_password_hash(clave)
+
+    cursor.execute(
+        q(
+            """
+            INSERT INTO usuarios (nombre, usuario, correo, clave, rol, activo, fecha_creacion)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """,
+            """
+            INSERT INTO usuarios (nombre, usuario, correo, clave, rol, activo, fecha_creacion)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """
+        ),
+        (nombre, usuario, correo, clave_hash, rol, 1, hoy_texto())
+    )
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return True, "Usuario creado correctamente."
+
+
+def actualizar_usuario(usuario_id, nombre, usuario, correo, rol, activo):
+    conn = get_db_connection()
+    cursor = get_cursor(conn)
+
+    cursor.execute(
+        q(
+            "SELECT id FROM usuarios WHERE (usuario = %s OR correo = %s) AND id <> %s",
+            "SELECT id FROM usuarios WHERE (usuario = ? OR correo = ?) AND id <> ?"
+        ),
+        (usuario, correo, usuario_id)
+    )
+    existente = fetchone_dict(cursor)
+
+    if existente:
+        cursor.close()
+        conn.close()
+        return False, "El usuario o el correo ya pertenece a otra cuenta."
+
+    cursor.execute(
+        q(
+            """
+            UPDATE usuarios
+            SET nombre = %s, usuario = %s, correo = %s, rol = %s, activo = %s
+            WHERE id = %s
+            """,
+            """
+            UPDATE usuarios
+            SET nombre = ?, usuario = ?, correo = ?, rol = ?, activo = ?
+            WHERE id = ?
+            """
+        ),
+        (nombre, usuario, correo, rol, activo, usuario_id)
+    )
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return True, "Usuario actualizado correctamente."
+
+
+def cambiar_clave_usuario(usuario_id, nueva_clave):
+    conn = get_db_connection()
+    cursor = get_cursor(conn)
+
+    cursor.execute(
+        q(
+            "UPDATE usuarios SET clave = %s WHERE id = %s",
+            "UPDATE usuarios SET clave = ? WHERE id = ?"
+        ),
+        (generate_password_hash(nueva_clave), usuario_id)
+    )
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
 def validar_usuario(usuario_ingresado, clave_ingresada):
     usuario = obtener_usuario(usuario_ingresado)
     if not usuario:
+        return False
+
+    if int(usuario.get("activo", 1)) != 1:
         return False
 
     clave_db = str(usuario["clave"]).strip()
@@ -204,6 +474,30 @@ def validar_usuario(usuario_ingresado, clave_ingresada):
 
     return False
 
+
+def es_admin():
+    return session.get('rol') == 'admin'
+
+
+def es_operador():
+    return session.get('rol') == 'operador'
+
+
+def es_maestro():
+    return session.get('rol') == 'maestro'
+
+
+def es_estudiante():
+    return session.get('rol') == 'estudiante'
+
+
+def es_admin_o_operador():
+    return session.get('rol') in ['admin', 'operador']
+
+
+# =========================
+# NEGOCIO
+# =========================
 
 def obtener_area(curso):
     medicina_tactica = [
@@ -264,9 +558,9 @@ def convertir_fecha(fecha_texto):
         return None
 
 
-def es_admin():
-    return session.get('rol') == 'admin'
-
+# =========================
+# RUTAS PRINCIPALES
+# =========================
 
 @app.route('/')
 def inicio():
@@ -288,7 +582,7 @@ def inscripcion():
         if not nombre or not correo or not curso:
             return render_template('inscripcion.html', error='Todos los campos son obligatorios.')
 
-        fecha = datetime.now().strftime('%d/%m/%Y %H:%M')
+        fecha = hoy_texto()
 
         conn = get_db_connection()
         cursor = get_cursor(conn)
@@ -319,7 +613,9 @@ def login():
         if validar_usuario(usuario, clave):
             usuario_data = obtener_usuario(usuario)
             session['logueado'] = True
-            session['usuario'] = usuario
+            session['usuario'] = usuario_data['usuario']
+            session['usuario_id'] = usuario_data['id']
+            session['nombre'] = usuario_data.get('nombre', usuario_data['usuario'])
             session['rol'] = usuario_data['rol']
             return redirect(url_for('inscritos'))
         else:
@@ -330,11 +626,13 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('logueado', None)
-    session.pop('usuario', None)
-    session.pop('rol', None)
+    session.clear()
     return redirect(url_for('login'))
 
+
+# =========================
+# PANEL INSCRITOS
+# =========================
 
 @app.route('/inscritos')
 def inscritos():
@@ -583,6 +881,138 @@ def editar_inscrito(registro_id):
     conn.close()
     return render_template('editar.html', registro=registro, error=None)
 
+
+# =========================
+# GESTION DE USUARIOS
+# =========================
+
+@app.route('/usuarios')
+def usuarios():
+    if not session.get('logueado'):
+        return redirect(url_for('login'))
+
+    if not es_admin():
+        return redirect(url_for('inscritos'))
+
+    lista = listar_usuarios()
+    return render_template(
+        'usuarios.html',
+        usuarios=lista,
+        usuario_actual=session.get('usuario'),
+        rol_actual=session.get('rol')
+    )
+
+
+@app.route('/crear-usuario', methods=['GET', 'POST'])
+def crear_usuario_view():
+    if not session.get('logueado'):
+        return redirect(url_for('login'))
+
+    if not es_admin():
+        return redirect(url_for('inscritos'))
+
+    error = None
+    exito = None
+
+    if request.method == 'POST':
+        nombre = request.form.get('nombre', '').strip()
+        usuario = request.form.get('usuario', '').strip()
+        correo = request.form.get('correo', '').strip()
+        clave = request.form.get('clave', '').strip()
+        rol = request.form.get('rol', '').strip()
+
+        roles_validos = ['admin', 'operador', 'maestro', 'estudiante']
+
+        if not nombre or not usuario or not correo or not clave or rol not in roles_validos:
+            error = 'Todos los campos son obligatorios y el rol debe ser válido.'
+        else:
+            ok, mensaje = crear_usuario(nombre, usuario, correo, clave, rol)
+            if ok:
+                exito = mensaje
+            else:
+                error = mensaje
+
+    return render_template('crear_usuario.html', error=error, exito=exito)
+
+
+@app.route('/editar-usuario/<int:usuario_id>', methods=['GET', 'POST'])
+def editar_usuario_view(usuario_id):
+    if not session.get('logueado'):
+        return redirect(url_for('login'))
+
+    if not es_admin():
+        return redirect(url_for('inscritos'))
+
+    usuario_data = obtener_usuario_por_id(usuario_id)
+    if not usuario_data:
+        return redirect(url_for('usuarios'))
+
+    error = None
+    exito = None
+
+    if request.method == 'POST':
+        nombre = request.form.get('nombre', '').strip()
+        usuario = request.form.get('usuario', '').strip()
+        correo = request.form.get('correo', '').strip()
+        rol = request.form.get('rol', '').strip()
+        activo = 1 if request.form.get('activo') == '1' else 0
+        nueva_clave = request.form.get('clave', '').strip()
+
+        roles_validos = ['admin', 'operador', 'maestro', 'estudiante']
+
+        if not nombre or not usuario or not correo or rol not in roles_validos:
+            error = 'Completa correctamente los campos.'
+        else:
+            ok, mensaje = actualizar_usuario(usuario_id, nombre, usuario, correo, rol, activo)
+            if ok:
+                if nueva_clave:
+                    cambiar_clave_usuario(usuario_id, nueva_clave)
+                exito = mensaje
+                usuario_data = obtener_usuario_por_id(usuario_id)
+            else:
+                error = mensaje
+
+    return render_template(
+        'editar_usuario.html',
+        usuario_data=usuario_data,
+        error=error,
+        exito=exito
+    )
+
+
+@app.route('/toggle-usuario/<int:usuario_id>', methods=['POST'])
+def toggle_usuario(usuario_id):
+    if not session.get('logueado'):
+        return redirect(url_for('login'))
+
+    if not es_admin():
+        return redirect(url_for('inscritos'))
+
+    usuario_data = obtener_usuario_por_id(usuario_id)
+    if not usuario_data:
+        return redirect(url_for('usuarios'))
+
+    nuevo_estado = 0 if int(usuario_data.get('activo', 1)) == 1 else 1
+
+    conn = get_db_connection()
+    cursor = get_cursor(conn)
+    cursor.execute(
+        q(
+            "UPDATE usuarios SET activo = %s WHERE id = %s",
+            "UPDATE usuarios SET activo = ? WHERE id = ?"
+        ),
+        (nuevo_estado, usuario_id)
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect(url_for('usuarios'))
+
+
+# =========================
+# INICIO
+# =========================
 
 inicializar_db()
 migrar_csv_a_db()

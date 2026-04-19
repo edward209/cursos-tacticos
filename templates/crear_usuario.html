@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crear usuario | F.E.M.P.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background:
+                linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.92)),
+                url("{{ url_for('static', filename='portada.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+        }
+
+        .contenedor {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .box {
+            width: 100%;
+            max-width: 650px;
+            background: rgba(0,0,0,0.78);
+            border: 1px solid rgba(0,255,136,0.35);
+            border-radius: 18px;
+            padding: 34px;
+            text-align: center;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+        }
+
+        .logo {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 3px solid #00ff88;
+            object-fit: cover;
+            background: white;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            color: #00ff88;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #d0d0d0;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .error {
+            color: #ff6666;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .exito {
+            color: #00ff88;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 15px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px 18px;
+            background: #00ff88;
+            color: black;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #00cc6a;
+        }
+
+        .volver {
+            margin-top: 18px;
+        }
+
+        .volver a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor">
+        <div class="box">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" class="logo">
+
+            <h1>Crear usuario</h1>
+            <p>Registra nuevos administradores, operadores, maestros o estudiantes.</p>
+
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+
+            {% if exito %}
+                <div class="exito">{{ exito }}</div>
+            {% endif %}
+
+            <form method="POST">
+                <input type="text" name="nombre" placeholder="Nombre completo" required>
+                <input type="text" name="usuario" placeholder="Nombre de usuario" required>
+                <input type="email" name="correo" placeholder="Correo electrónico" required>
+                <input type="password" name="clave" placeholder="Contraseña" required>
+
+                <select name="rol" required>
+                    <option value="">Selecciona un rol</option>
+                    <option value="admin">Administrador</option>
+                    <option value="operador">Operador</option>
+                    <option value="maestro">Maestro</option>
+                    <option value="estudiante">Estudiante</option>
+                </select>
+
+                <button type="submit">Guardar usuario</button>
+            </form>
+
+            <div class="volver">
+                <a href="/usuarios">← Volver a gestión de usuarios</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
